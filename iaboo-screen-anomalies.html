@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IABOO — Anomalies</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#070a10; --surf:#0d1119; --surf2:#111827;
+  --border:#1a2236; --border2:#22304a;
+  --blue:#3b82f6; --blue2:#1d4ed8; --blue-dim:rgba(59,130,246,.12);
+  --green:#10b981; --green-dim:rgba(16,185,129,.12);
+  --amber:#f59e0b; --amber-dim:rgba(245,158,11,.12);
+  --red:#ef4444; --red-dim:rgba(239,68,68,.12);
+  --purple:#8b5cf6;
+  --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8;
+  --sidebar-w:220px;
+}
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; display:flex; overflow:hidden; }
+.sidebar { width:var(--sidebar-w); background:var(--surf); border-right:1px solid var(--border); display:flex; flex-direction:column; height:100vh; position:fixed; left:0; top:0; z-index:100; }
+.sidebar-logo { padding:20px 20px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.logo-mark { width:32px; height:32px; background:var(--blue); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:#fff; }
+.logo-text { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; color:var(--text); }
+.logo-version { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); margin-top:1px; }
+.sidebar-nav { padding:12px 10px; flex:1; display:flex; flex-direction:column; gap:2px; }
+.nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; padding:10px 10px 4px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13.5px; color:var(--muted2); position:relative; transition:all .15s; }
+.nav-item:hover { background:var(--surf2); color:var(--text); }
+.nav-item.active { background:var(--red-dim); color:#fca5a5; font-weight:600; }
+.nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:18px; background:var(--red); border-radius:0 2px 2px 0; }
+.nav-icon { font-size:16px; width:20px; text-align:center; }
+.nav-badge { margin-left:auto; background:var(--red); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.nav-badge.amber { background:var(--amber); color:#000; }
+.sidebar-footer { padding:12px 10px; border-top:1px solid var(--border); }
+.user-card { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; cursor:pointer; }
+.u-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+.user-name { font-size:12px; font-weight:600; color:var(--text); }
+.user-role { font-size:10px; color:var(--muted); }
+
+.main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.header { height:56px; background:var(--surf); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 24px; gap:12px; flex-shrink:0; }
+.header-title { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; }
+.header-spacer { flex:1; }
+.header-btn { width:34px; height:34px; border-radius:8px; background:var(--surf2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; position:relative; }
+.notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1px solid var(--surf); }
+.btn { padding:7px 14px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all .15s; display:flex; align-items:center; gap:6px; font-family:'DM Sans',sans-serif; }
+.btn-ghost { background:transparent; color:var(--muted2); border:1px solid var(--border); }
+.btn-ghost:hover { border-color:var(--border2); color:var(--text); }
+.btn-red { background:var(--red); color:#fff; }
+.btn-green { background:var(--green-dim); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+.btn-amber { background:var(--amber-dim); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+
+.tabs-bar { padding:0 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; background:var(--surf); flex-shrink:0; }
+.tab { padding:14px 18px; font-size:13px; font-weight:500; color:var(--muted2); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; display:flex; align-items:center; gap:6px; }
+.tab.t-red { color:var(--red); border-bottom-color:var(--red); font-weight:600; }
+.tab.t-blue { color:var(--blue); border-bottom-color:var(--blue); font-weight:600; }
+.t-pill { font-family:'DM Mono',monospace; font-size:10px; padding:1px 6px; border-radius:10px; }
+
+.body-layout { display:flex; flex:1; overflow:hidden; }
+
+/* LIST */
+.list-col { width:400px; flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.list-toolbar { padding:10px 14px; border-bottom:1px solid var(--border); display:flex; gap:6px; background:var(--surf); flex-shrink:0; }
+.fc { padding:4px 10px; border-radius:14px; font-size:11px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surf2); color:var(--muted2); white-space:nowrap; }
+.fc-r { background:var(--red-dim); border-color:rgba(239,68,68,.4); color:#fca5a5; }
+.fc-a { background:var(--amber-dim); border-color:rgba(245,158,11,.4); color:#fcd34d; }
+
+.anomalies-list { flex:1; overflow-y:auto; }
+.anom-item { padding:14px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; }
+.anom-item:hover { background:rgba(255,255,255,.02); }
+.anom-item.sel { background:var(--red-dim); border-left:3px solid var(--red); padding-left:13px; }
+.anom-item.sel-a { background:var(--amber-dim); border-left:3px solid var(--amber); padding-left:13px; }
+
+.ai-r1 { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+.ab { padding:2px 8px; border-radius:4px; font-size:10px; font-weight:700; }
+.ab-r { background:var(--red-dim); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+.ab-a { background:var(--amber-dim); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+.ai-tt { font-size:13px; font-weight:600; color:var(--text); flex:1; line-height:1.35; }
+.ai-ts { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); flex-shrink:0; }
+.ai-d { font-size:11.5px; color:var(--muted2); line-height:1.5; margin-bottom:8px; }
+.ai-bot { display:flex; align-items:center; gap:8px; }
+.ai-site { font-size:11px; color:var(--muted); }
+.ai-avs { display:flex; margin-left:auto; }
+.ai-av { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:7px; font-weight:700; color:#fff; margin-left:-4px; border:1.5px solid var(--surf); }
+.ai-av:first-child { margin-left:0; }
+.pbar { height:3px; background:var(--surf2); border-radius:2px; overflow:hidden; margin-top:8px; }
+.pbar-f { height:100%; border-radius:2px; }
+.pbar-lbls { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:3px; }
+
+/* DETAIL */
+.detail-col { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.dh { padding:18px 24px 14px; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--surf); }
+.dh-top { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+.dh-ico { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; background:var(--red-dim); border:1px solid rgba(239,68,68,.3); animation:gp 2s infinite; }
+@keyframes gp { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+.dh-title { font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--text); margin-bottom:5px; line-height:1.3; }
+.dh-tags { display:flex; gap:10px; flex-wrap:wrap; }
+.dh-tag { font-size:11px; color:var(--muted); }
+.dh-tag.red { color:var(--red); font-weight:600; }
+.dh-acts { display:flex; gap:8px; flex-wrap:wrap; }
+
+.db { flex:1; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:20px; }
+.sect { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+
+.s3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.sb { background:var(--surf2); border:1px solid var(--border); border-radius:8px; padding:12px 14px; text-align:center; }
+.sv { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; margin-bottom:3px; }
+.sl { font-size:10px; color:var(--muted); }
+
+/* TIMELINE */
+.tl { display:flex; flex-direction:column; }
+.tlr { display:flex; gap:12px; padding-bottom:14px; position:relative; }
+.tlr:last-child { padding-bottom:0; }
+.tlr:not(:last-child)::before { content:''; position:absolute; left:15px; top:30px; bottom:0; width:1px; background:var(--border); }
+.tld { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; border:1px solid var(--border); }
+.tld-r { background:var(--red-dim); border-color:rgba(239,68,68,.35); }
+.tld-b { background:var(--blue-dim); border-color:rgba(59,130,246,.35); }
+.tld-a { background:var(--amber-dim); border-color:rgba(245,158,11,.35); animation:blinka 1.5s infinite; }
+.tld-g { background:var(--surf2); }
+@keyframes blinka { 0%,100%{opacity:1} 50%{opacity:.4} }
+.tlb { flex:1; padding-top:4px; }
+.tlt { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:2px; }
+.tlx { font-size:12.5px; color:var(--text); line-height:1.5; }
+.tls { font-size:11px; color:var(--muted2); margin-top:2px; }
+
+/* CONTACTS */
+.clist { display:flex; flex-direction:column; gap:6px; }
+.crow { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surf2); }
+.crow.pend { border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.04); }
+.cav { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; flex-shrink:0; }
+.cin { flex:1; }
+.cn { font-size:12px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.cd { font-size:10px; color:var(--muted); }
+.ccan { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); background:var(--surf); padding:2px 6px; border-radius:3px; border:1px solid var(--border); }
+.cst { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; }
+.cs-refuse { background:var(--red-dim); color:#f87171; border:1px solid rgba(239,68,68,.25); }
+.cs-wait { background:var(--amber-dim); color:#fbbf24; border:1px solid rgba(245,158,11,.25); animation:blinka 1.5s infinite; }
+
+/* IA CARDS */
+.ia-list { display:flex; flex-direction:column; gap:8px; }
+.iac { border-radius:10px; border:1px solid var(--border); overflow:hidden; transition:all .15s; cursor:pointer; }
+.iac:hover { border-color:var(--border2); transform:translateY(-1px); }
+.iac.best { border-color:rgba(16,185,129,.4); }
+.iac-h { padding:11px 14px; display:flex; align-items:center; gap:10px; }
+.iac.best .iac-h { background:rgba(16,185,129,.06); }
+.ian { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); }
+.iat { font-size:12.5px; font-weight:600; color:var(--text); flex:1; }
+.iar { font-size:9px; font-weight:700; color:#34d399; background:rgba(16,185,129,.12); padding:2px 8px; border-radius:10px; border:1px solid rgba(16,185,129,.3); }
+.iac-b { padding:0 14px 10px; font-size:11.5px; color:var(--muted2); line-height:1.6; }
+.iac-f { padding:8px 14px; border-top:1px solid var(--border); display:flex; gap:6px; }
+
+::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">IA</div>
+    <div><div class="logo-text">IABOO</div><div class="logo-version">v1.0 · PORTAIL ADMIN</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Navigation</div>
+    <a class="nav-item"><span class="nav-icon">⊡</span>Dashboard</a>
+    <a class="nav-item"><span class="nav-icon">👤</span>Agents<span class="nav-badge amber">2</span></a>
+    <a class="nav-item"><span class="nav-icon">🏢</span>Sites & Clients</a>
+    <a class="nav-item"><span class="nav-icon">📅</span>Plannings</a>
+    <a class="nav-item active"><span class="nav-icon">⚠️</span>Anomalies<span class="nav-badge">3</span></a>
+    <a class="nav-item"><span class="nav-icon">🗓️</span>Disponibilités</a>
+    <div class="nav-label" style="margin-top:8px">Système</div>
+    <a class="nav-item"><span class="nav-icon">⚙️</span>Paramètres</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="u-avatar">KM</div>
+      <div style="flex:1;min-width:0"><div class="user-name">Karim Mansour</div><div class="user-role">Planificateur</div></div>
+      <span style="font-size:14px;color:var(--muted)">⋮</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <header class="header">
+    <div class="header-title">Anomalies</div>
+    <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-left:4px">— 3 ouvertes · 1 urgente</span>
+    <div class="header-spacer"></div>
+    <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;background:var(--red-dim);border:1px solid rgba(239,68,68,.3);font-size:12px;color:#f87171;font-weight:600">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--red);animation:db 1s infinite"></div>
+      1 remplacement en cours
+    </div>
+    <style>@keyframes db{0%,100%{opacity:1}50%{opacity:.2}}</style>
+    <div class="header-btn">🔔<div class="notif-dot"></div></div>
+  </header>
+
+  <div class="tabs-bar">
+    <div class="tab t-red">Ouvertes <span class="t-pill" style="background:var(--red-dim);color:#fca5a5">3</span></div>
+    <div class="tab t-blue">En traitement <span class="t-pill" style="background:var(--blue-dim);color:#93c5fd">1</span></div>
+    <div class="tab">Résolues <span class="t-pill" style="background:var(--surf2);color:var(--muted)">18</span></div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;padding:0 4px">
+      <span style="font-size:11px;color:var(--muted)">Taux résolution ce mois :</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);font-weight:600">86%</span>
+    </div>
+  </div>
+
+  <div class="body-layout">
+
+    <div class="list-col">
+      <div class="list-toolbar">
+        <div class="fc">Tous (3)</div>
+        <div class="fc fc-r">🚨 Urgent (1)</div>
+        <div class="fc fc-a">⚠ Attention (2)</div>
+      </div>
+      <div class="anomalies-list">
+
+        <div class="anom-item sel">
+          <div class="ai-r1">
+            <span class="ab ab-r">🚨 Remplacement impossible</span>
+            <div class="ai-ts">07:32</div>
+          </div>
+          <div class="ai-tt" style="margin-bottom:5px">Poste découvert — Carrefour Belleville</div>
+          <div class="ai-d">Thomas Diallo absent · Vacation 08h–20h · 4 agents contactés, 0 confirmation</div>
+          <div class="pbar"><div class="pbar-f" style="width:44%;background:var(--red)"></div></div>
+          <div class="pbar-lbls"><span>4 contactés / 9 éligibles</span><span style="color:var(--red)">⏱ 52 min</span></div>
+          <div class="ai-bot" style="margin-top:8px">
+            <span class="ai-site">🏢 Carrefour Belleville</span>
+            <div class="ai-avs">
+              <div class="ai-av" style="background:#3b82f6">YB</div>
+              <div class="ai-av" style="background:#10b981">AL</div>
+              <div class="ai-av" style="background:#f59e0b;color:#000">KB</div>
+              <div class="ai-av" style="background:#8b5cf6">SN</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="anom-item">
+          <div class="ai-r1">
+            <span class="ab ab-a">⚠ Carte pro expirante</span>
+            <div class="ai-ts">Hier</div>
+          </div>
+          <div class="ai-tt" style="margin-bottom:5px">Carte CNAPS expire dans 18 jours — Farid Khelif</div>
+          <div class="ai-d">Renouvellement requis avant le 27 juin. Sans action, l'agent ne peut plus être planifié légalement.</div>
+          <div class="ai-bot" style="margin-top:8px">
+            <span class="ai-site">👤 Tour Montparnasse</span>
+            <div class="ai-avs"><div class="ai-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">FK</div></div>
+          </div>
+        </div>
+
+        <div class="anom-item">
+          <div class="ai-r1">
+            <span class="ab ab-a">⚠ Dépassement heures</span>
+            <div class="ai-ts">Hier</div>
+          </div>
+          <div class="ai-tt" style="margin-bottom:5px">Plafond contractuel approché — Nadia Amara</div>
+          <div class="ai-d">137h effectuées sur 151h contractuelles. Risque de dépassement si non ajusté avant fin juin.</div>
+          <div class="pbar" style="margin-top:8px"><div class="pbar-f" style="width:91%;background:var(--amber)"></div></div>
+          <div class="pbar-lbls"><span>137h / 151h</span><span style="color:var(--amber)">91% du contrat</span></div>
+          <div class="ai-bot" style="margin-top:8px">
+            <span class="ai-site">👤 Tour Montparnasse</span>
+            <div class="ai-avs"><div class="ai-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">NA</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="detail-col">
+      <div class="dh">
+        <div class="dh-top">
+          <div class="dh-ico">🚨</div>
+          <div style="flex:1">
+            <div class="dh-title">Poste découvert — Carrefour Belleville · Vacation 08h00–20h00</div>
+            <div class="dh-tags">
+              <span class="dh-tag">🏢 Carrefour Belleville</span>
+              <span class="dh-tag">👤 Thomas Diallo absent</span>
+              <span class="dh-tag">🕐 52 min sans résolution</span>
+              <span class="dh-tag red">⚡ Urgence critique</span>
+            </div>
+          </div>
+        </div>
+        <div class="dh-acts">
+          <button class="btn btn-ghost" style="font-size:11px">🔕 Ignorer</button>
+          <button class="btn btn-amber" style="font-size:11px">📞 Appeler manuellement</button>
+          <button class="btn btn-red" style="font-size:11px">⚡ Résoudre manuellement</button>
+        </div>
+      </div>
+
+      <div class="db">
+
+        <div>
+          <div class="sect">Résumé de la situation</div>
+          <div class="s3">
+            <div class="sb"><div class="sv" style="color:var(--red)">52</div><div class="sl">minutes écoulées</div></div>
+            <div class="sb"><div class="sv">4 / 9</div><div class="sl">agents contactés</div></div>
+            <div class="sb"><div class="sv" style="color:var(--amber)">5</div><div class="sl">éligibles restants</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sect">Chronologie de l'événement</div>
+          <div class="tl">
+            <div class="tlr">
+              <div class="tld tld-r">🚨</div>
+              <div class="tlb">
+                <div class="tlt">07:32 — Détection automatique</div>
+                <div class="tlx">Absence constatée : Thomas Diallo ne s'est pas présenté au poste</div>
+                <div class="tls">Source : Appel permanence depuis PC sécurité Carrefour Belleville</div>
+              </div>
+            </div>
+            <div class="tlr">
+              <div class="tld tld-b">🤖</div>
+              <div class="tlb">
+                <div class="tlt">07:32 — Analyse IA déclenchée</div>
+                <div class="tlx">9 agents éligibles identifiés par le moteur de contraintes</div>
+                <div class="tls">Critères : disponible · SSIAP1 · heures libres · carte valide · sans conflit</div>
+              </div>
+            </div>
+            <div class="tlr">
+              <div class="tld tld-g">💬</div>
+              <div class="tlb">
+                <div class="tlt">07:33 — Contact #1</div>
+                <div class="tlx">WhatsApp → Youssef Bennani</div>
+                <div class="tls" style="color:var(--red)">Refus — "Pas disponible ce matin"</div>
+              </div>
+            </div>
+            <div class="tlr">
+              <div class="tld tld-g">💬</div>
+              <div class="tlb">
+                <div class="tlt">07:48 — Contact #2</div>
+                <div class="tlx">WhatsApp → Amina Larbi</div>
+                <div class="tls" style="color:var(--red)">Refus — "Mission cet après-midi, trop court"</div>
+              </div>
+            </div>
+            <div class="tlr">
+              <div class="tld tld-g">💬</div>
+              <div class="tlb">
+                <div class="tlt">08:04 — Contact #3</div>
+                <div class="tlx">WhatsApp → Kevin Barbier</div>
+                <div class="tls" style="color:var(--red)">Refus — "Trop loin, pas de transport"</div>
+              </div>
+            </div>
+            <div class="tlr">
+              <div class="tld tld-a">💬</div>
+              <div class="tlb">
+                <div class="tlt">08:19 — Contact #4 · En attente</div>
+                <div class="tlx" style="color:#fbbf24">WhatsApp → Sandra Nguyen · Réponse attendue</div>
+                <div class="tls" style="color:var(--amber)">⏳ Timeout dans 10 min — relance automatique si pas de réponse</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sect">Agents contactés — Statuts</div>
+          <div class="clist">
+            <div class="crow">
+              <div class="cav" style="background:linear-gradient(135deg,#10b981,#3b82f6)">YB</div>
+              <div class="cin"><div class="cn">Youssef Bennani <span style="font-size:9px;color:var(--purple);font-weight:400;margin-left:4px">VOLANT</span></div><div class="cd">0h / 151h · SSIAP1 · 07:33</div></div>
+              <span class="ccan">WA</span>
+              <span class="cst cs-refuse">Refus</span>
+            </div>
+            <div class="crow">
+              <div class="cav" style="background:linear-gradient(135deg,#10b981,#06b6d4)">AL</div>
+              <div class="cin"><div class="cn">Amina Larbi <span style="font-size:9px;color:var(--purple);font-weight:400;margin-left:4px">VOLANT</span></div><div class="cd">36h / 151h · SSIAP2 · 07:48</div></div>
+              <span class="ccan">WA</span>
+              <span class="cst cs-refuse">Refus</span>
+            </div>
+            <div class="crow">
+              <div class="cav" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">KB</div>
+              <div class="cin"><div class="cn">Kevin Barbier <span style="font-size:9px;color:var(--purple);font-weight:400;margin-left:4px">VOLANT</span></div><div class="cd">72h / 151h · SSIAP1 · 08:04</div></div>
+              <span class="ccan">WA</span>
+              <span class="cst cs-refuse">Refus</span>
+            </div>
+            <div class="crow pend">
+              <div class="cav" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">SN</div>
+              <div class="cin"><div class="cn">Sandra Nguyen <span style="font-size:9px;color:var(--purple);font-weight:400;margin-left:4px">VOLANT</span></div><div class="cd">96h / 151h · SSIAP3 · 08:19</div></div>
+              <span class="ccan">WA</span>
+              <span class="cst cs-wait">⏳ En attente</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sect">💡 Propositions IA — Si Sandra Nguyen refuse</div>
+          <div class="ia-list">
+            <div class="iac best">
+              <div class="iac-h">
+                <span class="ian">01</span>
+                <span class="iat">Contacter Mohamed Touré (agent volant)</span>
+                <span class="iar">✦ Recommandé</span>
+              </div>
+              <div class="iac-b">Éligible SSIAP1, carte valide, 120h/151h. Distance 22 km — prévoir 30–45 min de délai sur prise de poste. Contacter par appel direct pour confirmation rapide.</div>
+              <div class="iac-f">
+                <button class="btn btn-green" style="font-size:11px;padding:5px 10px">✓ Appliquer</button>
+                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">📞 Appeler</button>
+              </div>
+            </div>
+            <div class="iac">
+              <div class="iac-h">
+                <span class="ian">02</span>
+                <span class="iat">Couverture partielle matin + recherche pour 14h</span>
+              </div>
+              <div class="iac-b">Signaler au client Carrefour — 2 agents jusqu'à 14h00, rétablissement à 3 agents sur le shift après-midi.</div>
+              <div class="iac-f"><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">Appliquer</button></div>
+            </div>
+            <div class="iac">
+              <div class="iac-h">
+                <span class="ian">03</span>
+                <span class="iat">Escalade — Intervention manuelle responsable</span>
+              </div>
+              <div class="iac-b">Aucun agent disponible dans un délai acceptable. Escalader vers le responsable d'exploitation pour solution de dernier recours.</div>
+              <div class="iac-f"><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">Escalader</button></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IABOO — Paramètres</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#070a10; --surf:#0d1119; --surf2:#111827; --surf3:#161e2e;
+  --border:#1a2236; --border2:#22304a;
+  --blue:#3b82f6; --blue2:#1d4ed8; --blue-dim:rgba(59,130,246,.12);
+  --green:#10b981; --green-dim:rgba(16,185,129,.12);
+  --amber:#f59e0b; --amber-dim:rgba(245,158,11,.12);
+  --red:#ef4444; --red-dim:rgba(239,68,68,.12);
+  --purple:#8b5cf6; --purple-dim:rgba(139,92,246,.12);
+  --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8;
+  --sidebar-w:220px;
+}
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; display:flex; overflow:hidden; }
+
+/* SIDEBAR */
+.sidebar { width:var(--sidebar-w); background:var(--surf); border-right:1px solid var(--border); display:flex; flex-direction:column; height:100vh; position:fixed; left:0; top:0; z-index:100; }
+.sidebar-logo { padding:20px 20px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.logo-mark { width:32px; height:32px; background:var(--blue); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:#fff; }
+.logo-text { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; color:var(--text); }
+.logo-version { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); margin-top:1px; }
+.sidebar-nav { padding:12px 10px; flex:1; display:flex; flex-direction:column; gap:2px; }
+.nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; padding:10px 10px 4px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13.5px; color:var(--muted2); position:relative; transition:all .15s; }
+.nav-item:hover { background:var(--surf2); color:var(--text); }
+.nav-item.active { background:var(--blue-dim); color:#93c5fd; font-weight:600; }
+.nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:18px; background:var(--blue); border-radius:0 2px 2px 0; }
+.nav-icon { font-size:16px; width:20px; text-align:center; }
+.nav-badge { margin-left:auto; background:var(--red); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.nav-badge.amber { background:var(--amber); color:#000; }
+.sidebar-footer { padding:12px 10px; border-top:1px solid var(--border); }
+.user-card { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; cursor:pointer; }
+.u-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+.user-name { font-size:12px; font-weight:600; color:var(--text); }
+.user-role { font-size:10px; color:var(--muted); }
+
+/* MAIN */
+.main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.header { height:56px; background:var(--surf); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 24px; gap:12px; flex-shrink:0; }
+.header-title { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; }
+.header-spacer { flex:1; }
+.btn { padding:7px 14px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all .15s; display:flex; align-items:center; gap:6px; font-family:'DM Sans',sans-serif; }
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-primary:hover { background:var(--blue2); }
+.btn-ghost { background:transparent; color:var(--muted2); border:1px solid var(--border); }
+.btn-ghost:hover { border-color:var(--border2); color:var(--text); }
+.btn-red { background:var(--red-dim); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+.btn-green { background:var(--green-dim); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+.btn-amber { background:var(--amber-dim); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+
+/* BODY */
+.body-layout { display:flex; flex:1; overflow:hidden; }
+
+/* LEFT NAV */
+.settings-nav { width:220px; flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; padding:16px 12px; gap:2px; background:var(--surf); }
+.sn-section { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); padding:10px 10px 4px; }
+.sn-item { display:flex; align-items:center; gap:9px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted2); transition:all .15s; position:relative; }
+.sn-item:hover { background:var(--surf2); color:var(--text); }
+.sn-item.active { background:var(--blue-dim); color:#93c5fd; font-weight:600; }
+.sn-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:16px; background:var(--blue); border-radius:0 2px 2px 0; }
+.sn-icon { font-size:15px; width:18px; text-align:center; flex-shrink:0; }
+
+/* CONTENT */
+.settings-content { flex:1; overflow-y:auto; padding:28px 32px; display:flex; flex-direction:column; gap:28px; }
+
+/* SECTION CARD */
+.s-card { background:var(--surf); border:1px solid var(--border); border-radius:14px; overflow:hidden; animation:fu .35s ease both; }
+.s-card:nth-child(1) { animation-delay:.04s; }
+.s-card:nth-child(2) { animation-delay:.08s; }
+.s-card:nth-child(3) { animation-delay:.12s; }
+.s-card:nth-child(4) { animation-delay:.16s; }
+.s-card:nth-child(5) { animation-delay:.20s; }
+@keyframes fu { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+.s-card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+.s-card-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.sci-blue { background:var(--blue-dim); border:1px solid rgba(59,130,246,.25); }
+.sci-green { background:var(--green-dim); border:1px solid rgba(16,185,129,.25); }
+.sci-amber { background:var(--amber-dim); border:1px solid rgba(245,158,11,.25); }
+.sci-purple { background:var(--purple-dim); border:1px solid rgba(139,92,246,.25); }
+.sci-red { background:var(--red-dim); border:1px solid rgba(239,68,68,.25); }
+.s-card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:var(--text); flex:1; }
+.s-card-sub { font-size:11.5px; color:var(--muted); margin-top:2px; }
+.s-card-badge { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); background:var(--surf2); padding:3px 8px; border-radius:4px; border:1px solid var(--border); }
+
+/* ROWS */
+.s-row { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; }
+.s-row:last-child { border-bottom:none; }
+.s-row-sub { align-items:flex-start; }
+.s-label { font-size:13px; font-weight:500; color:var(--text); }
+.s-desc { font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.5; }
+.s-info { flex:1; }
+.s-ctrl { flex-shrink:0; display:flex; align-items:center; gap:8px; }
+
+/* TOGGLE */
+.toggle { width:40px; height:22px; border-radius:11px; cursor:pointer; position:relative; transition:background .2s; flex-shrink:0; }
+.toggle.on { background:var(--blue); }
+.toggle.off { background:var(--surf2); border:1px solid var(--border2); }
+.toggle::after { content:''; position:absolute; top:3px; width:16px; height:16px; border-radius:50%; background:#fff; transition:left .2s; }
+.toggle.on::after { left:21px; }
+.toggle.off::after { left:3px; box-shadow:0 1px 3px rgba(0,0,0,.4); }
+
+/* INPUT */
+.s-input { background:var(--surf2); border:1px solid var(--border); border-radius:7px; padding:7px 11px; font-size:12.5px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; transition:border-color .15s; min-width:0; }
+.s-input:focus { border-color:var(--blue); }
+.s-input.w80 { width:80px; }
+.s-input.w120 { width:120px; }
+.s-input.w200 { width:200px; }
+.s-input.mono { font-family:'DM Mono',monospace; font-size:12px; }
+
+/* SELECT */
+.s-select { background:var(--surf2); border:1px solid var(--border); border-radius:7px; padding:7px 28px 7px 11px; font-size:12.5px; color:var(--text); font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; appearance:none; -webkit-appearance:none; transition:border-color .15s; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+.s-select:focus { border-color:var(--blue); }
+
+/* STATUS INDICATOR */
+.status-pill { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+.sp-green { background:var(--green-dim); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+.sp-amber { background:var(--amber-dim); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+.sp-red { background:var(--red-dim); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+.sp-dot { width:6px; height:6px; border-radius:50%; }
+.sp-green .sp-dot { background:var(--green); }
+.sp-amber .sp-dot { background:var(--amber); }
+.sp-red .sp-dot { background:var(--red); }
+
+/* ROLES TABLE */
+.roles-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:16px 20px; }
+.role-card { background:var(--surf2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.rc-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.rc-icon { width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.rc-title { font-family:'Syne',sans-serif; font-weight:700; font-size:12px; color:var(--text); }
+.rc-perm { display:flex; flex-direction:column; gap:4px; }
+.rcp { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted2); }
+.rcp-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.rcp-dot.yes { background:var(--green); }
+.rcp-dot.no { background:var(--surf2); border:1px solid var(--border2); }
+.rcp.no { color:var(--muted); }
+
+/* AGENTS SECTION */
+.agents-wa-list { padding:0 20px 16px; display:flex; flex-direction:column; gap:6px; }
+.wa-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--surf2); border:1px solid var(--border); border-radius:8px; }
+.wa-av { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; flex-shrink:0; }
+.wa-name { font-size:12px; font-weight:500; color:var(--text); flex:1; }
+.wa-num { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted2); }
+.wa-status { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ws-ok { background:var(--green); box-shadow:0 0 5px rgba(16,185,129,.5); }
+.ws-na { background:var(--muted); }
+
+/* IA PARAMS */
+.ia-params-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:16px 20px; }
+.iap { background:var(--surf2); border:1px solid var(--border); border-radius:9px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
+.iap-icon { font-size:18px; flex-shrink:0; }
+.iap-info { flex:1; }
+.iap-label { font-size:12px; font-weight:500; color:var(--text); margin-bottom:2px; }
+.iap-desc { font-size:10.5px; color:var(--muted); line-height:1.4; }
+
+/* JOURNAL ENTRIES */
+.journal-list { padding:0 20px 16px; display:flex; flex-direction:column; gap:5px; }
+.jl-row { display:flex; align-items:center; gap:12px; padding:8px 12px; background:var(--surf2); border:1px solid var(--border); border-radius:7px; }
+.jl-time { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); flex-shrink:0; width:90px; }
+.jl-badge { padding:2px 7px; border-radius:3px; font-size:10px; font-weight:600; flex-shrink:0; }
+.jb-info { background:var(--blue-dim); color:#93c5fd; border:1px solid rgba(59,130,246,.25); }
+.jb-warn { background:var(--amber-dim); color:#fbbf24; border:1px solid rgba(245,158,11,.25); }
+.jb-ok { background:var(--green-dim); color:#34d399; border:1px solid rgba(16,185,129,.25); }
+.jb-err { background:var(--red-dim); color:#f87171; border:1px solid rgba(239,68,68,.25); }
+.jl-text { font-size:11.5px; color:var(--muted2); flex:1; }
+.jl-user { font-size:10px; color:var(--muted); flex-shrink:0; }
+
+::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">IA</div>
+    <div><div class="logo-text">IABOO</div><div class="logo-version">v1.0 · PORTAIL ADMIN</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Navigation</div>
+    <a class="nav-item"><span class="nav-icon">⊡</span>Dashboard</a>
+    <a class="nav-item"><span class="nav-icon">👤</span>Agents<span class="nav-badge amber">2</span></a>
+    <a class="nav-item"><span class="nav-icon">🏢</span>Sites & Clients</a>
+    <a class="nav-item"><span class="nav-icon">📅</span>Plannings</a>
+    <a class="nav-item"><span class="nav-icon">⚠️</span>Anomalies<span class="nav-badge">3</span></a>
+    <a class="nav-item"><span class="nav-icon">🗓️</span>Disponibilités</a>
+    <div class="nav-label" style="margin-top:8px">Système</div>
+    <a class="nav-item active"><span class="nav-icon">⚙️</span>Paramètres</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="u-avatar">KM</div>
+      <div style="flex:1;min-width:0"><div class="user-name">Karim Mansour</div><div class="user-role">Planificateur</div></div>
+      <span style="font-size:14px;color:var(--muted)">⋮</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <header class="header">
+    <div class="header-title">Paramètres</div>
+    <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-left:4px">— Configuration système IABOO</span>
+    <div class="header-spacer"></div>
+    <button class="btn btn-ghost" style="font-size:11px">↩ Réinitialiser</button>
+    <button class="btn btn-primary" style="font-size:11px">💾 Sauvegarder les modifications</button>
+  </header>
+
+  <div class="body-layout">
+
+    <!-- LEFT NAV -->
+    <div class="settings-nav">
+      <div class="sn-section">Général</div>
+      <div class="sn-item active"><span class="sn-icon">🔗</span>Intégrations</div>
+      <div class="sn-item"><span class="sn-icon">🤖</span>Agent IA</div>
+      <div class="sn-item"><span class="sn-icon">📅</span>Planification</div>
+      <div class="sn-item"><span class="sn-icon">🔔</span>Notifications</div>
+
+      <div class="sn-section">Accès</div>
+      <div class="sn-item"><span class="sn-icon">👥</span>Utilisateurs & rôles</div>
+      <div class="sn-item"><span class="sn-icon">📱</span>Agents WhatsApp</div>
+
+      <div class="sn-section">Système</div>
+      <div class="sn-item"><span class="sn-icon">📋</span>Journal d'activité</div>
+      <div class="sn-item"><span class="sn-icon">🔒</span>Sécurité</div>
+      <div class="sn-item"><span class="sn-icon">💾</span>Sauvegardes</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="settings-content">
+
+      <!-- ══════════════════════════════
+           1. INTÉGRATIONS
+      ══════════════════════════════ -->
+      <div class="s-card">
+        <div class="s-card-header">
+          <div class="s-card-icon sci-green">🔗</div>
+          <div style="flex:1">
+            <div class="s-card-title">Intégrations</div>
+            <div class="s-card-sub">Connexions aux services externes utilisés par l'IA</div>
+          </div>
+        </div>
+
+        <!-- WhatsApp 360dialog -->
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Gateway WhatsApp — 360dialog</div>
+            <div class="s-desc">Canal principal de communication avec les agents. Envoi/réception de messages via WABA officielle Meta.</div>
+          </div>
+          <div class="s-ctrl">
+            <div class="status-pill sp-green"><div class="sp-dot"></div>Connecté</div>
+            <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">Configurer</button>
+          </div>
+        </div>
+
+        <!-- Webhook URL -->
+        <div class="s-row s-row-sub">
+          <div class="s-info">
+            <div class="s-label">URL Webhook entrant</div>
+            <div class="s-desc">Endpoint n8n qui reçoit les messages WhatsApp entrants des agents.</div>
+          </div>
+          <div class="s-ctrl">
+            <input class="s-input w200 mono" value="https://n8n.iaboo.fr/wh/wa-in" readonly style="font-size:10.5px;color:var(--muted2)"/>
+            <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">📋 Copier</button>
+          </div>
+        </div>
+
+        <!-- Claude API -->
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Anthropic Claude API</div>
+            <div class="s-desc">Moteur IA principal — parsing NLP, optimisation planning, analyse mails clients.</div>
+          </div>
+          <div class="s-ctrl">
+            <div class="status-pill sp-green"><div class="sp-dot"></div>Actif</div>
+            <input class="s-input mono" value="sk-ant-••••••••••••••••KQZA" style="width:180px;font-size:11px;color:var(--muted2)"/>
+            <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">✏</button>
+          </div>
+        </div>
+
+        <!-- Modèle IA -->
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Modèle utilisé</div>
+            <div class="s-desc">Modèle Claude actif pour tous les agents IA du système.</div>
+          </div>
+          <div class="s-ctrl">
+            <select class="s-select">
+              <option selected>claude-sonnet-4-5 (recommandé)</option>
+              <option>claude-opus-4-5 (plus lent)</option>
+              <option>claude-haiku-4-5 (économique)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- SendGrid -->
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Service email — SendGrid</div>
+            <div class="s-desc">Envoi des plannings PDF/Excel aux agents et récupération des mails clients entrants.</div>
+          </div>
+          <div class="s-ctrl">
+            <div class="status-pill sp-green"><div class="sp-dot"></div>Connecté</div>
+            <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">Configurer</button>
+          </div>
+        </div>
+
+        <!-- Adresse mail collecte -->
+        <div class="s-row s-row-sub">
+          <div class="s-info">
+            <div class="s-label">Adresse email de collecte clients</div>
+            <div class="s-desc">Les demandes clients envoyées à cette adresse sont détectées et traitées automatiquement par l'IA.</div>
+          </div>
+          <div class="s-ctrl">
+            <input class="s-input w200 mono" value="planning@iaboo.fr" style="font-size:11.5px"/>
+          </div>
+        </div>
+
+        <!-- n8n -->
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Orchestrateur n8n</div>
+            <div class="s-desc">Moteur de workflows — hébergement self-hosted. 8 workflows actifs.</div>
+          </div>
+          <div class="s-ctrl">
+            <div class="status-pill sp-green"><div class="sp-dot"></div>8 workflows actifs</div>
+            <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px">Ouvrir n8n →</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════
+           2. AGENT IA — COMPORTEMENT
+      ══════════════════════════════ -->
+      <div class="s-card">
+        <div class="s-card-header">
+          <div class="s-card-icon sci-blue">🤖</div>
+          <div style="flex:1">
+            <div class="s-card-title">Comportement de l'agent IA</div>
+            <div class="s-card-sub">Paramètres de prise de décision et d'autonomie du système</div>
+          </div>
+        </div>
+
+        <div class="ia-params-grid">
+
+          <div class="iap">
+            <div class="iap-icon">⏱</div>
+            <div class="iap-info">
+              <div class="iap-label">Délai avant escalade</div>
+              <div class="iap-desc">Si aucun remplaçant n'accepte dans ce délai, anomalie créée et planificateur alerté.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input class="s-input w80 mono" value="30" style="text-align:center"/>
+              <span style="font-size:11px;color:var(--muted)">min</span>
+            </div>
+          </div>
+
+          <div class="iap">
+            <div class="iap-icon">🔁</div>
+            <div class="iap-info">
+              <div class="iap-label">Timeout réponse agent</div>
+              <div class="iap-desc">Délai d'attente de réponse WhatsApp avant de passer à l'agent suivant.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input class="s-input w80 mono" value="15" style="text-align:center"/>
+              <span style="font-size:11px;color:var(--muted)">min</span>
+            </div>
+          </div>
+
+          <div class="iap">
+            <div class="iap-icon">📱</div>
+            <div class="iap-info">
+              <div class="iap-label">Canal de contact prioritaire</div>
+              <div class="iap-desc">Canal utilisé en priorité pour contacter les agents lors des remplacements.</div>
+            </div>
+            <select class="s-select" style="font-size:11.5px">
+              <option selected>WhatsApp</option>
+              <option>Email</option>
+              <option>Appel téléphonique</option>
+            </select>
+          </div>
+
+          <div class="iap">
+            <div class="iap-icon">📅</div>
+            <div class="iap-info">
+              <div class="iap-label">Jour de collecte disponibilités</div>
+              <div class="iap-desc">Jour du mois (M-1) où l'IA envoie automatiquement le message de collecte.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:11px;color:var(--muted)">Le</span>
+              <input class="s-input w80 mono" value="20" style="text-align:center"/>
+              <span style="font-size:11px;color:var(--muted)">du mois</span>
+            </div>
+          </div>
+
+          <div class="iap">
+            <div class="iap-icon">⚠️</div>
+            <div class="iap-info">
+              <div class="iap-label">Alerte expiration carte pro</div>
+              <div class="iap-desc">Nombre de jours avant expiration déclenchant une anomalie automatique.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input class="s-input w80 mono" value="30" style="text-align:center"/>
+              <span style="font-size:11px;color:var(--muted)">jours</span>
+            </div>
+          </div>
+
+          <div class="iap">
+            <div class="iap-icon">📊</div>
+            <div class="iap-info">
+              <div class="iap-label">Seuil alerte heures contrat</div>
+              <div class="iap-desc">Pourcentage d'heures atteint déclenchant une alerte dépassement potentiel.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input class="s-input w80 mono" value="90" style="text-align:center"/>
+              <span style="font-size:11px;color:var(--muted)">%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TOGGLES IA -->
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Validation automatique des remplacements</div>
+            <div class="s-desc">Si activé, l'IA met à jour le planning et envoie le mail dès qu'un agent confirme, sans validation humaine.</div>
+          </div>
+          <div class="s-ctrl">
+            <span style="font-size:11px;color:var(--muted)">Désactivé</span>
+            <div class="toggle off"></div>
+            <span style="font-size:11px;color:var(--muted2)">Activer</span>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Contacter les agents par appel si WhatsApp échoue</div>
+            <div class="s-desc">L'IA peut déclencher un appel téléphonique automatique si l'agent ne répond pas sur WhatsApp.</div>
+          </div>
+          <div class="s-ctrl">
+            <span style="font-size:11px;color:#93c5fd">Activé</span>
+            <div class="toggle on"></div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Génération automatique du planning mensuel</div>
+            <div class="s-desc">L'IA génère le planning dès que 100% des disponibilités sont collectées, sans attendre le planificateur.</div>
+          </div>
+          <div class="s-ctrl">
+            <span style="font-size:11px;color:var(--muted)">Désactivé</span>
+            <div class="toggle off"></div>
+            <span style="font-size:11px;color:var(--muted2)">Activer</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════
+           3. NOTIFICATIONS
+      ══════════════════════════════ -->
+      <div class="s-card">
+        <div class="s-card-header">
+          <div class="s-card-icon sci-amber">🔔</div>
+          <div style="flex:1">
+            <div class="s-card-title">Notifications & alertes</div>
+            <div class="s-card-sub">Canaux et conditions d'envoi des alertes aux planificateurs</div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Email d'alerte planificateur</div>
+            <div class="s-desc">Adresse destinataire des alertes anomalies urgentes et escalades.</div>
+          </div>
+          <div class="s-ctrl">
+            <input class="s-input w200" value="karim.mansour@iaboo.fr"/>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Alertes en temps réel dans le portail</div>
+            <div class="s-desc">Bandeau rouge et notification sonore lors d'une absence critique non couverte.</div>
+          </div>
+          <div class="s-ctrl">
+            <span style="font-size:11px;color:#93c5fd">Activé</span>
+            <div class="toggle on"></div>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Rapport quotidien par email</div>
+            <div class="s-desc">Synthèse envoyée chaque matin à 07h00 : couverture du jour, anomalies, agents en limite d'heures.</div>
+          </div>
+          <div class="s-ctrl">
+            <span style="font-size:11px;color:#93c5fd">Activé</span>
+            <div class="toggle on"></div>
+            <select class="s-select" style="font-size:11px">
+              <option>07:00</option>
+              <option>06:30</option>
+              <option>08:00</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="s-row">
+          <div class="s-info">
+            <div class="s-label">Notifier le client en cas de couverture partielle</div>
+            <div class="s-desc">L'IA envoie automatiquement un email au contact client si un poste reste découvert plus de X minutes.</div>
+          </div>
+          <div class="s-ctrl">
+            <span style="font-size:11px;color:var(--muted)">Désactivé</span>
+            <div class="toggle off"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════
+           4. UTILISATEURS & RÔLES
+      ══════════════════════════════ -->
+      <div class="s-card">
+        <div class="s-card-header">
+          <div class="s-card-icon sci-purple">👥</div>
+          <div style="flex:1">
+            <div class="s-card-title">Utilisateurs & rôles</div>
+            <div class="s-card-sub">Accès au portail admin — 3 rôles disponibles</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:11px">+ Ajouter un utilisateur</button>
+        </div>
+
+        <div class="roles-grid">
+
+          <div class="role-card">
+            <div class="rc-header">
+              <div class="rc-icon" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,.25)">📋</div>
+              <div>
+                <div class="rc-title">PLANIFICATEUR</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:1px">2 utilisateurs</div>
+              </div>
+            </div>
+            <div class="rc-perm">
+              <div class="rcp"><div class="rcp-dot yes"></div>Voir tous les écrans</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Modifier plannings</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Gérer anomalies</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Modifier agents & sites</div>
+              <div class="rcp no"><div class="rcp-dot no"></div>Accès paramètres</div>
+              <div class="rcp no"><div class="rcp-dot no"></div>Gestion utilisateurs</div>
+            </div>
+          </div>
+
+          <div class="role-card">
+            <div class="rc-header">
+              <div class="rc-icon" style="background:var(--amber-dim);border:1px solid rgba(245,158,11,.25)">🔒</div>
+              <div>
+                <div class="rc-title">PERMANENCE</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:1px">3 utilisateurs</div>
+              </div>
+            </div>
+            <div class="rc-perm">
+              <div class="rcp"><div class="rcp-dot yes"></div>Dashboard temps réel</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Déclarer absences</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Voir anomalies</div>
+              <div class="rcp no"><div class="rcp-dot no"></div>Modifier plannings</div>
+              <div class="rcp no"><div class="rcp-dot no"></div>Modifier agents & sites</div>
+              <div class="rcp no"><div class="rcp-dot no"></div>Accès paramètres</div>
+            </div>
+          </div>
+
+          <div class="role-card" style="border-color:rgba(139,92,246,.25)">
+            <div class="rc-header">
+              <div class="rc-icon" style="background:var(--purple-dim);border:1px solid rgba(139,92,246,.25)">👑</div>
+              <div>
+                <div class="rc-title">ADMIN</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:1px">1 utilisateur</div>
+              </div>
+            </div>
+            <div class="rc-perm">
+              <div class="rcp"><div class="rcp-dot yes"></div>Accès complet</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Paramètres système</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Gestion utilisateurs</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Intégrations API</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Journal d'activité</div>
+              <div class="rcp"><div class="rcp-dot yes"></div>Sauvegardes & exports</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- USERS LIST -->
+        <div style="padding:0 20px 16px;display:flex;flex-direction:column;gap:6px">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Utilisateurs actifs</div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--surf2);border:1px solid var(--border);border-radius:8px">
+            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">KM</div>
+            <div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text)">Karim Mansour</div><div style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e78c86958e8ac98a868994889295a78e86858888c98195">[email&#160;protected]</a></div></div>
+            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:var(--blue-dim);color:#93c5fd;border:1px solid rgba(59,130,246,.25)">Planificateur</span>
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Connecté</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--surf2);border:1px solid var(--border);border-radius:8px">
+            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#10b981,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">SF</div>
+            <div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text)">Sophie Faure</div><div style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="addec2ddc5c4c883cbccd8dfc8edc4cccfc2c283cbdf">[email&#160;protected]</a></div></div>
+            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:var(--purple-dim);color:#c4b5fd;border:1px solid rgba(139,92,246,.25)">Admin</span>
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Il y a 2h</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--surf2);border:1px solid var(--border);border-radius:8px">
+            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ef4444);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">JB</div>
+            <div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text)">Jean-Marc Bouchard</div><div style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7a10175418150f19121b081e3a131b181515541c08">[email&#160;protected]</a></div></div>
+            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:var(--amber-dim);color:#fbbf24;border:1px solid rgba(245,158,11,.25)">Permanence</span>
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Hier</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           5. AGENTS — NUMÉROS WHATSAPP
+      ══════════════════════════════ -->
+      <div class="s-card">
+        <div class="s-card-header">
+          <div class="s-card-icon sci-green">📱</div>
+          <div style="flex:1">
+            <div class="s-card-title">Numéros WhatsApp des agents</div>
+            <div class="s-card-sub">Vérification des numéros enregistrés et de la joignabilité WhatsApp</div>
+          </div>
+          <div class="status-pill sp-green"><div class="sp-dot"></div>38 / 41 vérifiés</div>
+        </div>
+        <div class="agents-wa-list">
+          <div class="wa-row">
+            <div class="wa-av" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">TD</div>
+            <div class="wa-name">Thomas Diallo</div>
+            <div class="wa-num">+33 6 12 34 56 78</div>
+            <div class="wa-status ws-ok"></div>
+            <span style="font-size:10px;color:var(--green)">Actif</span>
+          </div>
+          <div class="wa-row">
+            <div class="wa-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">FK</div>
+            <div class="wa-name">Farid Khelif</div>
+            <div class="wa-num">+33 6 98 76 54 32</div>
+            <div class="wa-status ws-ok"></div>
+            <span style="font-size:10px;color:var(--green)">Actif</span>
+          </div>
+          <div class="wa-row">
+            <div class="wa-av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">SN</div>
+            <div class="wa-name">Sandra Nguyen</div>
+            <div class="wa-num">+33 6 55 44 33 22</div>
+            <div class="wa-status ws-ok"></div>
+            <span style="font-size:10px;color:var(--green)">Actif</span>
+          </div>
+          <div class="wa-row" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.03)">
+            <div class="wa-av" style="background:linear-gradient(135deg,#7c3aed,#3b82f6)">PB</div>
+            <div class="wa-name">Pierre Bernard</div>
+            <div class="wa-num">+33 6 11 22 33 44</div>
+            <div class="wa-status" style="background:var(--amber)"></div>
+            <span style="font-size:10px;color:var(--amber)">Non vérifié</span>
+            <button class="btn btn-amber" style="font-size:10px;padding:3px 8px;margin-left:4px">Vérifier</button>
+          </div>
+          <div style="padding:8px 12px;font-size:11px;color:var(--muted);text-align:center">
+            + 37 autres agents · <span style="color:var(--blue);cursor:pointer">Voir tous →</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           6. JOURNAL D'ACTIVITÉ
+      ══════════════════════════════ -->
+      <div class="s-card">
+        <div class="s-card-header">
+          <div class="s-card-icon sci-blue">📋</div>
+          <div style="flex:1">
+            <div class="s-card-title">Journal d'activité système</div>
+            <div class="s-card-sub">Historique des actions IA, modifications et alertes — 30 derniers jours</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:11px">⬇ Exporter CSV</button>
+        </div>
+        <div class="journal-list">
+          <div class="jl-row">
+            <div class="jl-time">09/06 · 08:19</div>
+            <span class="jl-badge jb-warn">REMPLACEMENT</span>
+            <div class="jl-text">Contact WhatsApp envoyé à Sandra Nguyen pour Carrefour Belleville 08h–20h</div>
+            <div class="jl-user">IA Auto</div>
+          </div>
+          <div class="jl-row">
+            <div class="jl-time">09/06 · 08:04</div>
+            <span class="jl-badge jb-warn">REMPLACEMENT</span>
+            <div class="jl-text">Refus de Kevin Barbier enregistré — passage au candidat suivant</div>
+            <div class="jl-user">IA Auto</div>
+          </div>
+          <div class="jl-row">
+            <div class="jl-time">09/06 · 07:32</div>
+            <span class="jl-badge jb-err">ABSENCE</span>
+            <div class="jl-text">Absence détectée : Thomas Diallo — Carrefour Belleville · Moteur de remplacement déclenché</div>
+            <div class="jl-user">IA Auto</div>
+          </div>
+          <div class="jl-row">
+            <div class="jl-time">08/06 · 14:23</div>
+            <span class="jl-badge jb-ok">DISPONIBILITÉ</span>
+            <div class="jl-text">Réponse disponibilités juillet reçue de Thomas Diallo via WhatsApp — parsée et enregistrée</div>
+            <div class="jl-user">IA Auto</div>
+          </div>
+          <div class="jl-row">
+            <div class="jl-time">08/06 · 09:14</div>
+            <span class="jl-badge jb-info">DEMANDE CLIENT</span>
+            <div class="jl-text">Mail entrant Clinique Saint-Joseph — demande 2 agents jeudi 12 juin · UC3 déclenché</div>
+            <div class="jl-user">IA Auto</div>
+          </div>
+          <div class="jl-row">
+            <div class="jl-time">07/06 · 16:40</div>
+            <span class="jl-badge jb-info">PLANNING</span>
+            <div class="jl-text">Planning juin v3 exporté PDF + Excel et envoyé à 41 agents par email</div>
+            <div class="jl-user">K. Mansour</div>
+          </div>
+          <div class

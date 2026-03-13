@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IABOO — Plannings</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#070a10; --surf:#0d1119; --surf2:#111827; --surf3:#161e2e;
+  --border:#1a2236; --border2:#22304a;
+  --blue:#3b82f6; --blue2:#1d4ed8; --blue-dim:rgba(59,130,246,.12);
+  --green:#10b981; --green-dim:rgba(16,185,129,.12);
+  --amber:#f59e0b; --amber-dim:rgba(245,158,11,.12);
+  --red:#ef4444; --red-dim:rgba(239,68,68,.12);
+  --cyan:#06b6d4; --cyan-dim:rgba(6,182,212,.12);
+  --purple:#8b5cf6; --purple-dim:rgba(139,92,246,.12);
+  --orange:#f97316;
+  --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8;
+  --sidebar-w:220px;
+}
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; display:flex; overflow:hidden; }
+
+/* SIDEBAR */
+.sidebar { width:var(--sidebar-w); background:var(--surf); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; height:100vh; position:fixed; left:0; top:0; z-index:100; }
+.sidebar-logo { padding:20px 20px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.logo-mark { width:32px; height:32px; background:var(--blue); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:#fff; flex-shrink:0; }
+.logo-text { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; color:var(--text); }
+.logo-version { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); margin-top:1px; }
+.sidebar-nav { padding:12px 10px; flex:1; display:flex; flex-direction:column; gap:2px; }
+.nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; padding:10px 10px 4px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; transition:all 0.15s; font-size:13.5px; font-weight:400; color:var(--muted2); position:relative; }
+.nav-item:hover { background:var(--surf2); color:var(--text); }
+.nav-item.active { background:var(--blue-dim); color:#93c5fd; font-weight:600; }
+.nav-item.active::before { content:''; position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:18px; background:var(--blue); border-radius:0 2px 2px 0; }
+.nav-icon { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+.nav-badge { margin-left:auto; background:var(--red); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.nav-badge.amber { background:var(--amber); color:#000; }
+.sidebar-footer { padding:12px 10px; border-top:1px solid var(--border); }
+.user-card { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; cursor:pointer; }
+.u-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; }
+.user-name { font-size:12px; font-weight:600; color:var(--text); }
+.user-role { font-size:10px; color:var(--muted); }
+
+/* MAIN */
+.main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.header { height:56px; background:var(--surf); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 24px; gap:12px; flex-shrink:0; }
+.header-title { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; }
+.header-spacer { flex:1; }
+.header-btn { width:34px; height:34px; border-radius:8px; background:var(--surf2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; position:relative; }
+.notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1px solid var(--surf); }
+.btn { padding:7px 14px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; display:flex; align-items:center; gap:6px; }
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-ghost { background:transparent; color:var(--muted2); border:1px solid var(--border); }
+.btn-ghost:hover { border-color:var(--border2); color:var(--text); }
+.btn-green { background:var(--green-dim); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+
+/* TOOLBAR */
+.toolbar { padding:12px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; background:var(--surf); flex-shrink:0; }
+
+/* VIEWS TABS */
+.view-tabs { display:flex; gap:2px; background:var(--surf2); border:1px solid var(--border); border-radius:8px; padding:3px; }
+.view-tab { padding:5px 14px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; color:var(--muted2); transition:all 0.15s; }
+.view-tab.active { background:var(--surf); color:var(--text); font-weight:600; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+
+/* MONTH NAV */
+.month-nav { display:flex; align-items:center; gap:8px; }
+.mnav-btn { width:28px; height:28px; border-radius:6px; background:var(--surf2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; color:var(--muted2); transition:all 0.15s; }
+.mnav-btn:hover { border-color:var(--border2); color:var(--text); }
+.mnav-label { font-family:'Syne',sans-serif; font-weight:700; font-size:13px; color:var(--text); min-width:100px; text-align:center; }
+
+/* FILTERS */
+.filter-chip { padding:5px 10px; border-radius:16px; font-size:11px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surf2); color:var(--muted2); transition:all 0.15s; }
+.filter-chip.active { background:var(--blue-dim); border-color:rgba(59,130,246,.4); color:#93c5fd; }
+
+/* ================================================================
+   VIEW 1 — GLOBAL CALENDAR (tableau croisé agents × jours)
+================================================================ */
+.view-global { flex:1; overflow:auto; display:flex; flex-direction:column; }
+
+.cal-wrap { min-width:900px; }
+
+.cal-header-row { display:flex; position:sticky; top:0; z-index:20; background:var(--surf2); border-bottom:1px solid var(--border); }
+.cal-agent-col { width:180px; flex-shrink:0; padding:8px 14px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.15em; color:var(--muted); text-transform:uppercase; }
+.cal-day-header { flex:1; min-width:28px; text-align:center; padding:6px 2px; border-left:1px solid var(--border); }
+.cal-day-num { font-family:'DM Mono',monospace; font-size:11px; font-weight:500; color:var(--muted2); }
+.cal-day-lbl { font-size:9px; color:var(--muted); margin-top:1px; }
+.cal-day-header.today .cal-day-num { color:var(--blue); font-weight:700; }
+.cal-day-header.today .cal-day-lbl { color:var(--blue); }
+.cal-day-header.weekend { background:rgba(255,255,255,.015); }
+
+.cal-row { display:flex; border-bottom:1px solid var(--border); transition:background 0.1s; }
+.cal-row:hover { background:rgba(255,255,255,.018); }
+.cal-row.has-alert { background:rgba(239,68,68,.03); }
+
+.cal-agent-cell { width:180px; flex-shrink:0; padding:8px 14px; display:flex; align-items:center; gap:8px; border-right:1px solid var(--border); }
+.cal-av { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; flex-shrink:0; }
+.cal-agent-name { font-size:11px; font-weight:500; color:var(--text); }
+.cal-agent-h { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); }
+
+.cal-cell { flex:1; min-width:28px; border-left:1px solid var(--border); padding:2px; display:flex; align-items:center; justify-content:center; }
+.cal-cell.weekend { background:rgba(255,255,255,.01); }
+
+.cal-mission {
+  width:100%; height:22px; border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:600; cursor:pointer;
+  transition:opacity 0.15s;
+  overflow:hidden;
+}
+.cal-mission:hover { opacity:0.8; }
+.cm-blue { background:rgba(59,130,246,.25); color:#93c5fd; border:1px solid rgba(59,130,246,.3); }
+.cm-green { background:rgba(16,185,129,.25); color:#6ee7b7; border:1px solid rgba(16,185,129,.3); }
+.cm-amber { background:rgba(245,158,11,.25); color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
+.cm-purple { background:rgba(139,92,246,.25); color:#c4b5fd; border:1px solid rgba(139,92,246,.3); }
+.cm-cyan { background:rgba(6,182,212,.25); color:#67e8f9; border:1px solid rgba(6,182,212,.3); }
+.cm-red { background:rgba(239,68,68,.2); color:#fca5a5; border:1px solid rgba(239,68,68,.3); }
+.cm-empty { background:transparent; border:1px dashed rgba(255,255,255,.06); color:transparent; }
+.cm-dispo { background:rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.08); }
+.cm-absent { background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3); font-size:10px; }
+.cm-replace { background:rgba(59,130,246,.15); color:#60a5fa; border:1px dashed rgba(59,130,246,.4); }
+
+/* LEGEND */
+.cal-legend { padding:10px 14px; border-top:1px solid var(--border); display:flex; gap:16px; flex-shrink:0; background:var(--surf); }
+.leg-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--muted); }
+.leg-dot { width:10px; height:10px; border-radius:2px; }
+
+/* ================================================================
+   AGENT DETAIL PANEL (right side for view-agent)
+================================================================ */
+.agent-detail-panel {
+  width:320px; flex-shrink:0; border-left:1px solid var(--border);
+  display:flex; flex-direction:column; background:var(--surf); overflow:hidden;
+}
+.adp-header { padding:14px 16px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.adp-selector { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.adp-av { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; }
+.adp-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--text); }
+.adp-meta { font-size:11px; color:var(--muted); }
+.adp-version { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); background:var(--surf2); padding:2px 7px; border-radius:4px; border:1px solid var(--border); margin-left:auto; }
+
+.adp-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; }
+.adp-stat { background:var(--surf2); border:1px solid var(--border); border-radius:7px; padding:8px 10px; text-align:center; }
+.adp-stat-val { font-family:'DM Mono',monospace; font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px; }
+.adp-stat-lbl { font-size:9px; color:var(--muted); }
+
+.adp-body { flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+.adp-month-title { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+
+/* MINI CALENDAR */
+.mini-cal { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+.mc-day-hdr { text-align:center; font-family:'DM Mono',monospace; font-size:8px; color:var(--muted); padding:2px 0; }
+.mc-cell { height:28px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; cursor:pointer; transition:all 0.15s; }
+.mc-cell:hover { opacity:0.8; }
+.mc-empty { background:transparent; color:transparent; cursor:default; }
+.mc-dispo { background:rgba(255,255,255,.04); color:var(--muted); }
+.mc-mission { color:#fff; font-weight:700; }
+.mc-indispo { background:var(--red-dim); color:var(--red); font-size:9px; }
+.mc-today { box-shadow:0 0 0 2px var(--blue); }
+.mc-absent { background:rgba(239,68,68,.2); color:#f87171; }
+
+.mission-list-mini { display:flex; flex-direction:column; gap:5px; }
+.mlm-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:7px; border:1px solid var(--border); background:var(--surf2); }
+.mlm-date { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); width:28px; flex-shrink:0; text-align:center; }
+.mlm-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.mlm-content { flex:1; }
+.mlm-site { font-size:11px; font-weight:500; color:var(--text); }
+.mlm-time { font-size:10px; color:var(--muted); }
+.mlm-hours { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted2); flex-shrink:0; }
+
+.adp-footer { padding:12px 14px; border-top:1px solid var(--border); display:flex; gap:6px; flex-shrink:0; }
+
+/* ================================================================
+   CONTENT AREA
+================================================================ */
+.content-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">IA</div>
+    <div><div class="logo-text">IABOO</div><div class="logo-version">v1.0 · PORTAIL ADMIN</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Navigation</div>
+    <a class="nav-item"><span class="nav-icon">⊡</span>Dashboard</a>
+    <a class="nav-item"><span class="nav-icon">👤</span>Agents<span class="nav-badge amber">2</span></a>
+    <a class="nav-item"><span class="nav-icon">🏢</span>Sites & Clients</a>
+    <a class="nav-item active"><span class="nav-icon">📅</span>Plannings</a>
+    <a class="nav-item"><span class="nav-icon">⚠️</span>Anomalies<span class="nav-badge">3</span></a>
+    <a class="nav-item"><span class="nav-icon">🗓️</span>Disponibilités</a>
+    <div class="nav-label" style="margin-top:8px">Système</div>
+    <a class="nav-item"><span class="nav-icon">⚙️</span>Paramètres</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="u-avatar">KM</div>
+      <div style="flex:1;min-width:0"><div class="user-name">Karim Mansour</div><div class="user-role">Planificateur</div></div>
+      <span style="font-size:14px;color:var(--muted)">⋮</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <div class="header-title">Plannings</div>
+    <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-left:4px">— Juin 2025</span>
+    <div class="header-spacer"></div>
+    <button class="btn btn-ghost" style="font-size:11px">⬇ Export Excel</button>
+    <button class="btn btn-ghost" style="font-size:11px">📄 PDF Global</button>
+    <button class="btn btn-green" style="font-size:11px">🔄 Replanifier</button>
+    <div class="header-btn">🔔<div class="notif-dot"></div></div>
+  </header>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="view-tabs">
+      <div class="view-tab active" onclick="switchView('global')">Vue globale</div>
+      <div class="view-tab" onclick="switchView('agent')">Par agent</div>
+      <div class="view-tab" onclick="switchView('site')">Par site</div>
+    </div>
+
+    <div class="month-nav">
+      <div class="mnav-btn">‹</div>
+      <div class="mnav-label">Juin 2025</div>
+      <div class="mnav-btn">›</div>
+    </div>
+
+    <div style="display:flex;gap:6px">
+      <div class="filter-chip active">Tous les agents</div>
+      <div class="filter-chip">Site principal</div>
+      <div class="filter-chip">Volants</div>
+    </div>
+
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">Version 3 · Modifié 09/06</div>
+      <div style="padding:3px 8px;border-radius:4px;background:var(--green-dim);color:#34d399;font-size:10px;font-weight:600;border:1px solid rgba(16,185,129,.25)">✓ Envoyé</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content-area" id="viewContent">
+
+    <!-- ── VUE GLOBALE ── -->
+    <div id="view-global" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <div class="view-global">
+        <div class="cal-wrap">
+
+          <!-- HEADER DAYS -->
+          <div class="cal-header-row">
+            <div class="cal-agent-col">Agent · Heures</div>
+            <!-- Days 1-15 shown -->
+            <div class="cal-day-header"><div class="cal-day-num">1</div><div class="cal-day-lbl">D</div></div>
+            <div class="cal-day-header weekend"><div class="cal-day-num">2</div><div class="cal-day-lbl">L</div></div>
+            <div class="cal-day-header weekend"><div class="cal-day-num">3</div><div class="cal-day-lbl">M</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">4</div><div class="cal-day-lbl">M</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">5</div><div class="cal-day-lbl">J</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">6</div><div class="cal-day-lbl">V</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">7</div><div class="cal-day-lbl">S</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">8</div><div class="cal-day-lbl">D</div></div>
+            <div class="cal-day-header today"><div class="cal-day-num">9</div><div class="cal-day-lbl">L</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">10</div><div class="cal-day-lbl">M</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">11</div><div class="cal-day-lbl">M</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">12</div><div class="cal-day-lbl">J</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">13</div><div class="cal-day-lbl">V</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">14</div><div class="cal-day-lbl">S</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">15</div><div class="cal-day-lbl">D</div></div>
+            <div class="cal-day-header weekend"><div class="cal-day-num">16</div><div class="cal-day-lbl">L</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">17</div><div class="cal-day-lbl">M</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">18</div><div class="cal-day-lbl">M</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">19</div><div class="cal-day-lbl">J</div></div>
+            <div class="cal-day-header"><div class="cal-day-num">20</div><div class="cal-day-lbl">V</div></div>
+          </div>
+
+          <!-- AGENT ROWS -->
+          <!-- Thomas Diallo -->
+          <div class="cal-row has-alert">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">TD</div>
+              <div><div class="cal-agent-name">T. Diallo</div><div class="cal-agent-h">88 / 151h</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-absent">ABS</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-replace">?</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+          </div>
+
+          <!-- Farid Khelif -->
+          <div class="cal-row">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#10b981,#06b6d4)">FK</div>
+              <div><div class="cal-agent-name">F. Khelif</div><div class="cal-agent-h">112 / 151h</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+          </div>
+
+          <!-- Nadia Amara -->
+          <div class="cal-row">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">NA</div>
+              <div><div class="cal-agent-name">N. Amara</div><div class="cal-agent-h" style="color:var(--red)">137 / 151h ⚠</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-green">TM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+          </div>
+
+          <!-- Sandra Nguyen -->
+          <div class="cal-row">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">SN</div>
+              <div><div class="cal-agent-name">S. Nguyen</div><div class="cal-agent-h">96 / 151h</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-blue">CB</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+          </div>
+
+          <!-- Marc Lecomte -->
+          <div class="cal-row">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">ML</div>
+              <div><div class="cal-agent-name">M. Lecomte</div><div class="cal-agent-h">72 / 151h</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-cyan">HM</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-purple">CSJ</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+          </div>
+
+          <!-- Youssef Bennani (Volant) -->
+          <div class="cal-row">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#10b981,#3b82f6)">YB</div>
+              <div><div class="cal-agent-name">Y. Bennani <span style="font-size:8px;color:var(--purple)">VOL</span></div><div class="cal-agent-h">0 / 151h</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-dispo"></div></div>
+          </div>
+
+          <!-- Omar Diallo -->
+          <div class="cal-row">
+            <div class="cal-agent-cell">
+              <div class="cal-av" style="background:linear-gradient(135deg,#059669,#10b981)">OD</div>
+              <div><div class="cal-agent-name">O. Diallo</div><div class="cal-agent-h">84 / 151h</div></div>
+            </div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell today"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell weekend"><div class="cal-mission cm-empty"></div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+            <div class="cal-cell"><div class="cal-mission cm-amber">CCN</div></div>
+          </div>
+
+        </div>
+
+        <!-- LEGEND -->
+        <div class="cal-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(59,130,246,.4)"></div>CB — Carrefour Belleville</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(16,185,129,.4)"></div>TM — Tour Montparnasse</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(139,92,246,.4)"></div>CSJ — Clinique St-Joseph</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(245,158,11,.4)"></div>CCN — C.C Nation</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(6,182,212,.4)"></div>HM — Hôtel Méridien</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(239,68,68,.3)"></div>Absent</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(255,255,255,.08);border:1px dashed rgba(255,255,255,.15)"></div>Disponible</div>
+          <div style="margin-left:auto;font-size:10px;color:var(--muted)">→ Cliquer sur une cellule pour voir le détail</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VUE PAR AGENT (hidden by default) ── -->
+    <div id="view-agent" style="display:none;flex:1;overflow:hidden;flex-direction:row">
+      <div style="flex:1;overflow-y:auto;padding:20px 24px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--muted);text-align:center;margin-top:60px">
+          Cliquer sur un agent dans la vue globale<br>pour afficher son calendrier détaillé ici
+        </div>
+      </div>
+      <!-- Agent detail panel -->
+      <div class="agent-detail-panel">
+        <div class="adp-header">
+          <div class="adp-selector">
+            <div class="adp-av" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">TD</div>
+            <div style="flex:1">
+              <div class="adp-name">Thomas Diallo</div>
+              <div class="adp-meta">Rattaché · Carrefour Belleville</div>
+            </div>
+            <div class="adp-version">v3</div>
+          </div>
+          <div class="adp-stats">
+            <div class="adp-stat">
+              <div class="adp-stat-val" style="color:var(--amber)">88h</div>
+              <div class="adp-stat-lbl">Effectuées</div>
+            </div>
+            <div class="adp-stat">
+              <div class="adp-stat-val">151h</div>
+              <div class="adp-stat-lbl">Contrat</div>
+            </div>
+            <div class="adp-stat">
+              <div class="adp-stat-val" style="color:var(--green)">63h</div>
+              <div class="adp-stat-lbl">Restantes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adp-body">
+          <div class="adp-month-title">Calendrier — Juin 2025</div>
+          <div class="mini-cal">
+            <div class="mc-day-hdr">L</div><div class="mc-day-hdr">M</div><div class="mc-day-hdr">M</div>
+            <div class="mc-day-hdr">J</div><div class="mc-day-hdr">V</div><div class="mc-day-hdr">S</div><div class="mc-day-hdr">D</div>
+            <!-- Week 1 -->
+            <div class="mc-cell mc-empty"></div>
+            <div class="mc-cell mc-empty"></div>
+            <div class="mc-cell mc-empty"></div>
+            <div class="mc-cell mc-empty"></div>
+            <div class="mc-cell mc-empty"></div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">1</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">2</div>
+            <!-- Week 2 -->
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">3</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">4</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">5</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">6</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">7</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">8</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">9</div>
+            <!-- Week 3 (today = 9) -->
+            <div class="mc-cell mc-absent mc-today">10</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.2);color:#93c5fd;border:1px dashed rgba(59,130,246,.4)">11</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">12</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">13</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">14</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">15</div>
+            <div class="mc-cell mc-indispo">16</div>
+            <!-- Week 4 -->
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">17</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">18</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">19</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">20</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">21</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">22</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">23</div>
+            <!-- Week 5 -->
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">24</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">25</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">26</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">27</div>
+            <div class="mc-cell mc-mission" style="background:rgba(59,130,246,.3);color:#93c5fd">28</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">29</div>
+            <div class="mc-cell mc-dispo" style="font-size:9px;color:var(--muted)">30</div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="adp-month-title">Prochaines missions</div>
+            <div class="mission-list-mini">
+              <div class="mlm-item" style="border-color:rgba(239,68,68,.25);background:var(--red-dim)">
+                <div class="mlm-date" style="color:var(--red)">09</div>
+                <div class="mlm-dot" style="background:var(--red)"></div>
+                <div class="mlm-content">
+                  <div class="mlm-site" style="color:#fca5a5">Absent — Non présenté</div>
+                  <div class="mlm-time">Carrefour Belleville · 08h–20h</div>
+                </div>
+                <div class="mlm-hours" style="color:var(--red)">ABS</div>
+              </div>
+              <div class="mlm-item" style="border-color:rgba(59,130,246,.25);background:rgba(59,130,246,.06)">
+                <div class="mlm-date">11</div>
+                <div class="mlm-dot" style="background:var(--blue)"></div>
+                <div class="mlm-content">
+                  <div class="mlm-site">Carrefour Belleville</div>
+                  <div class="mlm-time">Lundi 11 · 08h00 – 20h00</div>
+                </div>
+                <div class="mlm-hours">12h</div>
+              </div>
+              <div class="mlm-item">
+                <div class="mlm-date">12</div>
+                <div class="mlm-dot" style="background:var(--blue)"></div>
+                <div class="mlm-content">
+                  <div class="mlm-site">Carrefour Belleville</div>
+                  <div class="mlm-time">Mardi 12 · 08h00 – 20h00</div>
+                </div>
+                <div class="mlm-hours">12h</div>
+              </div>
+              <div class="mlm-item">
+                <div class="mlm-date">13</div>
+                <div class="mlm-dot" style="background:var(--blue)"></div>
+                <div class="mlm-content">
+                  <div class="mlm-site">Carrefour Belleville</div>
+                  <div class="mlm-time">Mercredi 13 · 08h00 – 20h00</div>
+                </div>
+                <div class="mlm-hours">12h</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adp-footer">
+          <button class="btn btn-ghost" style="flex:1;font-size:11px">📄 PDF agent</button>
+          <button class="btn btn-primary" style="flex:1;font-size:11px">✉ Renvoyer mail</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VUE PAR SITE (hidden) ── -->
+    <div id="view-site" style="display:none;flex:1;overflow-y:auto;padding:24px">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--muted);text-align:center;margin-top:60px">
+        Vue par site — Sélectionner un site dans la toolbar pour afficher sa couverture horaire
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+function switchView(view) {
+  document.querySelectorAll('.view-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['global','agent','site'][i] === view);
+  });
+  ['global','agent','site'].forEach(v => {
+    const el = document.getElementById('view-' + v);
+    el.style.display = v === view ? 'flex' : 'none';
+  });
+}
+// Init
+switchView('global');
+</script>
+</body>
+</html>

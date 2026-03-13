@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IABOO — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:       #070a10;
+  --surf:     #0d1119;
+  --surf2:    #111827;
+  --border:   #1a2236;
+  --border2:  #22304a;
+  --blue:     #3b82f6;
+  --blue2:    #1d4ed8;
+  --blue-dim: rgba(59,130,246,.12);
+  --green:    #10b981;
+  --green-dim:rgba(16,185,129,.12);
+  --amber:    #f59e0b;
+  --amber-dim:rgba(245,158,11,.12);
+  --red:      #ef4444;
+  --red-dim:  rgba(239,68,68,.12);
+  --cyan:     #06b6d4;
+  --purple:   #8b5cf6;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --muted2:   #94a3b8;
+  --sidebar-w: 220px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surf);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--blue);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.logo-version {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-top: 1px;
+}
+
+.sidebar-nav {
+  padding: 12px 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 10px 10px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--muted2);
+  text-decoration: none;
+  position: relative;
+}
+
+.nav-item:hover { background: var(--surf2); color: var(--text); }
+
+.nav-item.active {
+  background: var(--blue-dim);
+  color: #93c5fd;
+  font-weight: 600;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 18px;
+  background: var(--blue);
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.nav-badge.amber { background: var(--amber); color: #000; }
+
+.sidebar-footer {
+  padding: 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.user-card:hover { background: var(--surf2); }
+
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 10px; color: var(--muted); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* ── HEADER ── */
+.header {
+  height: 56px;
+  background: var(--surf);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.header-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.header-spacer { flex: 1; }
+
+.alert-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  animation: pulse-chip 2s infinite;
+}
+
+@keyframes pulse-chip {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+.alert-chip.urgent {
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,.35);
+  color: #f87171;
+}
+
+.alert-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+
+.header-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.header-btn:hover { border-color: var(--border2); background: #1a2436; }
+
+.header-btn .notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 1px solid var(--surf);
+}
+
+/* ── CONTENT ── */
+.content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.kpi-card {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+  animation: fadeUp 0.4s ease both;
+}
+
+.kpi-card:hover { transform: translateY(-1px); }
+.kpi-card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-card:nth-child(2) { animation-delay: 0.1s; }
+.kpi-card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-card:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(12px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.kpi-card.blue { border-color: rgba(59,130,246,.25); }
+.kpi-card.green { border-color: rgba(16,185,129,.25); }
+.kpi-card.amber { border-color: rgba(245,158,11,.25); }
+.kpi-card.red { border-color: rgba(239,68,68,.25); }
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.06;
+}
+
+.kpi-card.blue::after { background: var(--blue); }
+.kpi-card.green::after { background: var(--green); transform: translate(30%, -30%); }
+.kpi-card.amber::after { background: var(--amber); transform: translate(30%, -30%); }
+.kpi-card.red::after { background: var(--red); transform: translate(30%, -30%); }
+
+.kpi-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.kpi-icon { font-size: 18px; }
+
+.kpi-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.kpi-card.blue .kpi-value { color: #93c5fd; }
+.kpi-card.green .kpi-value { color: #6ee7b7; }
+.kpi-card.amber .kpi-value { color: #fcd34d; }
+.kpi-card.red .kpi-value { color: #fca5a5; }
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kpi-trend { font-weight: 600; }
+.kpi-trend.up { color: var(--green); }
+.kpi-trend.down { color: var(--red); }
+
+/* ── MIDDLE ROW ── */
+.mid-row {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  animation: fadeUp 0.4s ease 0.25s both;
+}
+
+/* ── SITES COVERAGE ── */
+.sites-panel {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+
+.panel-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--surf2);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.panel-action {
+  font-size: 12px;
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.site-row {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.site-row:last-child { border-bottom: none; }
+.site-row:hover { background: rgba(255,255,255,.02); }
+
+.site-status {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.site-status.ok { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,.5); }
+.site-status.warn { background: var(--amber); box-shadow: 0 0 6px rgba(245,158,11,.5); }
+.site-status.crit { background: var(--red); box-shadow: 0 0 6px rgba(239,68,68,.5); animation: blink 1s infinite; }
+
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.site-info { flex: 1; min-width: 0; }
+.site-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.site-meta { font-size: 11px; color: var(--muted); }
+
+.site-coverage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.coverage-bar-wrap { width: 80px; height: 4px; background: var(--surf2); border-radius: 2px; overflow: hidden; }
+.coverage-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+.coverage-bar.full { background: var(--green); }
+.coverage-bar.partial { background: var(--amber); }
+.coverage-bar.low { background: var(--red); }
+
+.coverage-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted2); }
+
+.site-agents {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.agent-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--surf);
+  font-size: 9px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: -6px;
+  color: #fff;
+}
+
+.agent-avatar:first-child { margin-left: 0; }
+
+.agent-avatar.missing {
+  background: var(--red-dim);
+  border-color: var(--red);
+  color: var(--red);
+  font-size: 12px;
+}
+
+/* ── ALERTS PANEL ── */
+.alerts-panel {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.alert-item:last-child { border-bottom: none; }
+.alert-item:hover { background: rgba(255,255,255,.02); }
+
+.alert-type-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.alert-content { flex: 1; }
+.alert-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; line-height: 1.4; }
+.alert-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.alert-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+
+.alert-item.urgent .alert-type-dot { background: var(--red); }
+.alert-item.warn .alert-type-dot { background: var(--amber); }
+.alert-item.info .alert-type-dot { background: var(--blue); }
+
+/* ── BOTTOM ROW ── */
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  animation: fadeUp 0.4s ease 0.3s both;
+}
+
+/* ── MISSIONS AUJOURD'HUI ── */
+.missions-today {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mission-item {
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.15s;
+}
+
+.mission-item:last-child { border-bottom: none; }
+.mission-item:hover { background: rgba(255,255,255,.02); }
+
+.mission-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  flex-shrink: 0;
+  width: 80px;
+}
+
+.mission-agent { flex: 1; }
+.mission-name { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.mission-site { font-size: 11px; color: var(--muted); }
+
+.mission-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mb-ok { background: var(--green-dim); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+.mb-late { background: var(--amber-dim); color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
+.mb-absent { background: var(--red-dim); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+.mb-replace { background: var(--blue-dim); color: #60a5fa; border: 1px solid rgba(59,130,246,.25); }
+
+/* ── AGENTS VOLANTS ── */
+.volants-panel {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.volant-item {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.15s;
+}
+
+.volant-item:last-child { border-bottom: none; }
+.volant-item:hover { background: rgba(255,255,255,.02); }
+
+.volant-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.volant-info { flex: 1; }
+.volant-name { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.volant-meta { font-size: 11px; color: var(--muted); }
+
+.volant-hours {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.volant-h-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.mini-bar-wrap { width: 60px; height: 3px; background: var(--surf2); border-radius: 2px; overflow: hidden; }
+.mini-bar { height: 100%; border-radius: 2px; }
+
+.volant-dispo {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.vd-ok { background: var(--green-dim); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+.vd-busy { background: var(--surf2); color: var(--muted); border: 1px solid var(--border); }
+
+/* ── URGENT BANNER ── */
+.urgent-banner {
+  background: linear-gradient(135deg, rgba(239,68,68,.12), rgba(239,68,68,.06));
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeUp 0.4s ease 0.05s both, banner-pulse 3s infinite;
+}
+
+@keyframes banner-pulse {
+  0%,100% { border-color: rgba(239,68,68,.3); }
+  50% { border-color: rgba(239,68,68,.6); }
+}
+
+.banner-icon { font-size: 24px; flex-shrink: 0; }
+.banner-content { flex: 1; }
+.banner-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: #fca5a5; margin-bottom: 3px; }
+.banner-desc { font-size: 12px; color: var(--muted2); }
+
+.banner-timer {
+  font-family: 'DM Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  color: #f87171;
+  flex-shrink: 0;
+}
+
+.banner-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.btn {
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue2); }
+.btn-ghost { background: transparent; color: var(--muted2); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: #dc2626; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">IA</div>
+    <div>
+      <div class="logo-text">IABOO</div>
+      <div class="logo-version">v1.0 · PORTAIL ADMIN</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Navigation</div>
+
+    <a class="nav-item active">
+      <span class="nav-icon">⊡</span>
+      Dashboard
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">👤</span>
+      Agents
+      <span class="nav-badge amber">2</span>
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">🏢</span>
+      Sites & Clients
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">📅</span>
+      Plannings
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">⚠️</span>
+      Anomalies
+      <span class="nav-badge">3</span>
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">🗓️</span>
+      Disponibilités
+    </a>
+
+    <div class="nav-label" style="margin-top:8px;">Système</div>
+    <a class="nav-item">
+      <span class="nav-icon">⚙️</span>
+      Paramètres
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar">KM</div>
+      <div class="user-info">
+        <div class="user-name">Karim Mansour</div>
+        <div class="user-role">Planificateur</div>
+      </div>
+      <span style="font-size:14px;color:var(--muted)">⋮</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div>
+      <span class="header-title">Dashboard</span>
+      <span class="header-date">— Lundi 09 juin 2025</span>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="alert-chip urgent">
+      <div class="alert-dot"></div>
+      1 absence en cours · Recherche remplaçant
+    </div>
+    <div class="header-btn">
+      🔔
+      <div class="notif-dot"></div>
+    </div>
+    <div class="header-btn">🔍</div>
+  </header>
+
+  <div class="content">
+
+    <!-- URGENT BANNER -->
+    <div class="urgent-banner">
+      <div class="banner-icon">🚨</div>
+      <div class="banner-content">
+        <div class="banner-title">Absence non couverte — Site Carrefour Belleville · Poste 08h00-20h00</div>
+        <div class="banner-desc">Thomas Diallo (Agent rattaché) a signalé son absence à 07h32. Recherche remplaçant en cours — 4 agents contactés, 2 refus.</div>
+      </div>
+      <div class="banner-timer" id="timer">12:47</div>
+      <div class="banner-actions">
+        <button class="btn btn-ghost">Voir détail</button>
+        <button class="btn btn-red">Intervenir</button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-header">
+          <span class="kpi-label">Agents dispo aujourd'hui</span>
+          <span class="kpi-icon">👥</span>
+        </div>
+        <div class="kpi-value">34</div>
+        <div class="kpi-sub">
+          <span class="kpi-trend up">↑ 3</span>
+          vs hier · sur 41 actifs
+        </div>
+      </div>
+
+      <div class="kpi-card green">
+        <div class="kpi-header">
+          <span class="kpi-label">Couverture sites</span>
+          <span class="kpi-icon">🏢</span>
+        </div>
+        <div class="kpi-value">87<span style="font-size:18px;font-weight:600">%</span></div>
+        <div class="kpi-sub">
+          <span class="kpi-trend down">↓ 1 site</span>
+          découvert ce matin
+        </div>
+      </div>
+
+      <div class="kpi-card amber">
+        <div class="kpi-header">
+          <span class="kpi-label">Anomalies ouvertes</span>
+          <span class="kpi-icon">⚠️</span>
+        </div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-sub">
+          <span class="kpi-trend down">1 urgente</span>
+          · 2 en attente
+        </div>
+      </div>
+
+      <div class="kpi-card red">
+        <div class="kpi-header">
+          <span class="kpi-label">Cartes pro expirantes</span>
+          <span class="kpi-icon">🪪</span>
+        </div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-sub">
+          <span class="kpi-trend down">⚡ Dans 30j</span>
+          · action requise
+        </div>
+      </div>
+    </div>
+
+    <!-- MID ROW -->
+    <div class="mid-row">
+
+      <!-- SITES COVERAGE -->
+      <div class="sites-panel">
+        <div class="panel-header">
+          <div class="panel-title">Couverture des sites — Aujourd'hui</div>
+          <div class="panel-tag">08 juin 2025</div>
+          <span class="panel-action">Voir tout →</span>
+        </div>
+
+        <div class="site-row">
+          <div class="site-status crit"></div>
+          <div class="site-info">
+            <div class="site-name">Carrefour Belleville</div>
+            <div class="site-meta">Paris 20e · 3 postes · 08h00–20h00</div>
+          </div>
+          <div class="site-agents">
+            <div class="agent-avatar" style="background:var(--blue)">ML</div>
+            <div class="agent-avatar" style="background:var(--purple)">SR</div>
+            <div class="agent-avatar missing">!</div>
+          </div>
+          <div class="site-coverage">
+            <div class="coverage-pct" style="color:var(--red)">67%</div>
+            <div class="coverage-bar-wrap"><div class="coverage-bar low" style="width:67%"></div></div>
+          </div>
+        </div>
+
+        <div class="site-row">
+          <div class="site-status ok"></div>
+          <div class="site-info">
+            <div class="site-name">Tour Montparnasse – Hall A</div>
+            <div class="site-meta">Paris 15e · 2 postes · 24h/24</div>
+          </div>
+          <div class="site-agents">
+            <div class="agent-avatar" style="background:var(--green)">FK</div>
+            <div class="agent-avatar" style="background:var(--amber);color:#000">NA</div>
+          </div>
+          <div class="site-coverage">
+            <div class="coverage-pct" style="color:var(--green)">100%</div>
+            <div class="coverage-bar-wrap"><div class="coverage-bar full" style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <div class="site-row">
+          <div class="site-status ok"></div>
+          <div class="site-info">
+            <div class="site-name">Clinique Saint-Joseph</div>
+            <div class="site-meta">Vincennes · 4 postes · 06h00–22h00</div>
+          </div>
+          <div class="site-agents">
+            <div class="agent-avatar" style="background:#7c3aed">PB</div>
+            <div class="agent-avatar" style="background:var(--cyan);color:#000">HL</div>
+            <div class="agent-avatar" style="background:var(--blue)">AM</div>
+            <div class="agent-avatar" style="background:#dc2626">JM</div>
+          </div>
+          <div class="site-coverage">
+            <div class="coverage-pct" style="color:var(--green)">100%</div>
+            <div class="coverage-bar-wrap"><div class="coverage-bar full" style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <div class="site-row">
+          <div class="site-status warn"></div>
+          <div class="site-info">
+            <div class="site-name">Centre Commercial Nation</div>
+            <div class="site-meta">Paris 11e · 3 postes · 09h00–21h00</div>
+          </div>
+          <div class="site-agents">
+            <div class="agent-avatar" style="background:var(--green)">OD</div>
+            <div class="agent-avatar" style="background:var(--amber);color:#000">RT</div>
+          </div>
+          <div class="site-coverage">
+            <div class="coverage-pct" style="color:var(--amber)">75%</div>
+            <div class="coverage-bar-wrap"><div class="coverage-bar partial" style="width:75%"></div></div>
+          </div>
+        </div>
+
+        <div class="site-row">
+          <div class="site-status ok"></div>
+          <div class="site-info">
+            <div class="site-name">Hôtel Méridien Paris</div>
+            <div class="site-meta">Paris 8e · 2 postes · 20h00–08h00</div>
+          </div>
+          <div class="site-agents">
+            <div class="agent-avatar" style="background:#9333ea">KT</div>
+            <div class="agent-avatar" style="background:var(--blue)">YB</div>
+          </div>
+          <div class="site-coverage">
+            <div class="coverage-pct" style="color:var(--green)">100%</div>
+            <div class="coverage-bar-wrap"><div class="coverage-bar full" style="width:100%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERTS PANEL -->
+      <div class="alerts-panel">
+        <div class="panel-header">
+          <div class="panel-title">Alertes actives</div>
+          <span class="panel-action">Tout voir →</span>
+        </div>
+
+        <div class="alert-item urgent">
+          <div class="alert-type-dot"></div>
+          <div class="alert-content">
+            <div class="alert-title">Remplacement non résolu</div>
+            <div class="alert-desc">Carrefour Belleville · Thomas Diallo · 08h-20h</div>
+          </div>
+          <div class="alert-time">07:32</div>
+        </div>
+
+        <div class="alert-item warn">
+          <div class="alert-type-dot"></div>
+          <div class="alert-content">
+            <div class="alert-title">Carte pro expirante</div>
+            <div class="alert-desc">Farid Khelif · expire dans 18 jours</div>
+          </div>
+          <div class="alert-time">Hier</div>
+        </div>
+
+        <div class="alert-item warn">
+          <div class="alert-type-dot"></div>
+          <div class="alert-content">
+            <div class="alert-title">Plafond heures approché</div>
+            <div class="alert-desc">Nadia Amara · 91% du contrat mensuel atteint</div>
+          </div>
+          <div class="alert-time">Hier</div>
+        </div>
+
+        <div class="alert-item info">
+          <div class="alert-type-dot"></div>
+          <div class="alert-content">
+            <div class="alert-title">Demande client reçue</div>
+            <div class="alert-desc">Clinique Saint-Joseph · 2 agents · Jeudi 12 juin</div>
+          </div>
+          <div class="alert-time">09:14</div>
+        </div>
+
+        <div class="alert-item info">
+          <div class="alert-type-dot"></div>
+          <div class="alert-content">
+            <div class="alert-title">Disponibilités en attente</div>
+            <div class="alert-desc">7 agents n'ont pas encore répondu pour juillet</div>
+          </div>
+          <div class="alert-time">08:00</div>
+        </div>
+
+        <div class="alert-item warn">
+          <div class="alert-type-dot"></div>
+          <div class="alert-content">
+            <div class="alert-title">Carte pro expirante</div>
+            <div class="alert-desc">Marc Lecomte · expire dans 26 jours</div>
+          </div>
+          <div class="alert-time">Lundi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+
+      <!-- MISSIONS DU JOUR -->
+      <div class="missions-today">
+        <div class="panel-header">
+          <div class="panel-title">Missions en cours — Ce matin</div>
+          <div class="panel-tag">06h00 – 14h00</div>
+          <span class="panel-action">Planning complet →</span>
+        </div>
+
+        <div class="mission-item">
+          <div class="mission-time">06:00 – 14:00</div>
+          <div class="mission-agent">
+            <div class="mission-name">Marc Lecomte</div>
+            <div class="mission-site">Clinique Saint-Joseph</div>
+          </div>
+          <span class="mission-badge mb-ok">En poste</span>
+        </div>
+
+        <div class="mission-item">
+          <div class="mission-time">06:00 – 18:00</div>
+          <div class="mission-agent">
+            <div class="mission-name">Hélène Laurent</div>
+            <div class="mission-site">Clinique Saint-Joseph</div>
+          </div>
+          <span class="mission-badge mb-ok">En poste</span>
+        </div>
+
+        <div class="mission-item">
+          <div class="mission-time">08:00 – 20:00</div>
+          <div class="mission-agent">
+            <div class="mission-name">Thomas Diallo</div>
+            <div class="mission-site">Carrefour Belleville</div>
+          </div>
+          <span class="mission-badge mb-absent">Absent</span>
+        </div>
+
+        <div class="mission-item">
+          <div class="mission-time">08:00 – 20:00</div>
+          <div class="mission-agent">
+            <div class="mission-name">Poste à couvrir</div>
+            <div class="mission-site">Carrefour Belleville · Remplaçant cherché</div>
+          </div>
+          <span class="mission-badge mb-replace">IA en recherche</span>
+        </div>
+
+        <div class="mission-item">
+          <div class="mission-time">09:00 – 21:00</div>
+          <div class="mission-agent">
+            <div class="mission-name">Omar Diallo</div>
+            <div class="mission-site">Centre Commercial Nation</div>
+          </div>
+          <span class="mission-badge mb-ok">En poste</span>
+        </div>
+
+        <div class="mission-item">
+          <div class="mission-time">09:00 – 21:00</div>
+          <div class="mission-agent">
+            <div class="mission-name">Rachid Tahir</div>
+            <div class="mission-site">Centre Commercial Nation</div>
+          </div>
+          <span class="mission-badge mb-late">Retard signalé</span>
+        </div>
+      </div>
+
+      <!-- AGENTS VOLANTS DISPO -->
+      <div class="volants-panel">
+        <div class="panel-header">
+          <div class="panel-title">Agents volants disponibles</div>
+          <div class="panel-tag">Aujourd'hui</div>
+        </div>
+
+        <div class="volant-item">
+          <div class="volant-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">YB</div>
+          <div class="volant-info">
+            <div class="volant-name">Youssef Bennani</div>
+            <div class="volant-meta">SSIAP1 · 12km · 0 mission ce mois</div>
+          </div>
+          <div class="volant-hours">
+            <div class="volant-h-val">0 / 151h</div>
+            <div class="mini-bar-wrap"><div class="mini-bar" style="width:0%;background:var(--green)"></div></div>
+          </div>
+          <span class="volant-dispo vd-ok">Libre</span>
+        </div>
+
+        <div class="volant-item">
+          <div class="volant-avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">AL</div>
+          <div class="volant-info">
+            <div class="volant-name">Amina Larbi</div>
+            <div class="volant-meta">SSIAP2 · 5km · 3 missions ce mois</div>
+          </div>
+          <div class="volant-hours">
+            <div class="volant-h-val">36 / 151h</div>
+            <div class="mini-bar-wrap"><div class="mini-bar" style="width:24%;background:var(--green)"></div></div>
+          </div>
+          <span class="volant-dispo vd-ok">Libre</span>
+        </div>
+
+        <div class="volant-item">
+          <div class="volant-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">KB</div>
+          <div class="volant-info">
+            <div class="volant-name">Kevin Barbier</div>
+            <div class="volant-meta">SSIAP1 · 8km · 6 missions ce mois</div>
+          </div>
+          <div class="volant-hours">
+            <div class="volant-h-val">72 / 151h</div>
+            <div class="mini-bar-wrap"><div class="mini-bar" style="width:48%;background:var(--amber)"></div></div>
+          </div>
+          <span class="volant-dispo vd-ok">Libre</span>
+        </div>
+
+        <div class="volant-item">
+          <div class="volant-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">SN</div>
+          <div class="volant-info">
+            <div class="volant-name">Sandra Nguyen</div>
+            <div class="volant-meta">SSIAP3 · 15km · 8 missions ce mois</div>
+          </div>
+          <div class="volant-hours">
+            <div class="volant-h-val">96 / 151h</div>
+            <div class="mini-bar-wrap"><div class="mini-bar" style="width:64%;background:var(--amber)"></div></div>
+          </div>
+          <span class="volant-dispo vd-busy">Mission 14h</span>
+        </div>
+
+        <div class="volant-item">
+          <div class="volant-avatar" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">MT</div>
+          <div class="volant-info">
+            <div class="volant-name">Mohamed Touré</div>
+            <div class="volant-meta">SSIAP1 · 22km · 10 missions ce mois</div>
+          </div>
+          <div class="volant-hours">
+            <div class="volant-h-val">120 / 151h</div>
+            <div class="mini-bar-wrap"><div class="mini-bar" style="width:79%;background:var(--red)"></div></div>
+          </div>
+          <span class="volant-dispo vd-busy">Proche limite</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+// Timer countdown for urgent banner
+let seconds = 12 * 60 + 47;
+function updateTimer() {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  document.getElementById('timer').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  if (seconds > 0) seconds++;
+  setTimeout(updateTimer, 1000);
+}
+updateTimer();
+</script>
+</body>
+</html>
