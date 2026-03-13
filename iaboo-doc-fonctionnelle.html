@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IABOO — Documentation Fonctionnelle v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #070a10;
+  --surf: #0d1119;
+  --surf2: #111827;
+  --border: #1a2236;
+  --border2: #243048;
+  --text: #e8edf5;
+  --text2: #c4cdd9;
+  --muted: #6b7a96;
+  --muted2: #8a96aa;
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,.12);
+  --blue-border: rgba(59,130,246,.3);
+  --green: #10b981;
+  --green-dim: rgba(16,185,129,.12);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,.12);
+  --purple: #8b5cf6;
+  --purple-dim: rgba(139,92,246,.12);
+  --sidebar-w: 260px;
+  --header-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOP HEADER ── */
+.top-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: rgba(7,10,16,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  z-index: 100;
+}
+
+.logo-mark {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 13px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: .04em;
+  color: var(--text);
+}
+
+.logo-sep { color: var(--border2); margin: 0 4px; }
+
+.doc-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 3px 8px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+}
+
+.header-spacer { flex: 1; }
+
+.version-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .1em;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  background: var(--surf);
+  padding: 28px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.nav-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 24px;
+  margin-bottom: 6px;
+  margin-top: 20px;
+}
+.nav-section-label:first-child { margin-top: 0; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 24px;
+  font-size: 13px;
+  color: var(--muted2);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all .15s;
+  line-height: 1.3;
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,.03);
+}
+
+.nav-item.active {
+  color: var(--blue);
+  border-left-color: var(--blue);
+  background: var(--blue-dim);
+  font-weight: 500;
+}
+
+.nav-icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
+
+.nav-sub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 24px 5px 52px;
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all .15s;
+}
+
+.nav-sub:hover { color: var(--text2); }
+.nav-sub.active { color: var(--blue); border-left-color: var(--blue); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  max-width: 860px;
+  padding: 52px 64px 120px;
+  min-width: 0;
+}
+
+/* ── HERO ── */
+.hero {
+  margin-bottom: 64px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--blue);
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: -.02em;
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+  font-size: 15px;
+  color: var(--muted2);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hero-meta-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* ── SECTION ── */
+.section {
+  margin-bottom: 72px;
+  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+
+.section-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.section > h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.01em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-icon {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.si-blue { background: var(--blue-dim); border: 1px solid var(--blue-border); }
+.si-green { background: var(--green-dim); border: 1px solid rgba(16,185,129,.3); }
+.si-amber { background: var(--amber-dim); border: 1px solid rgba(245,158,11,.3); }
+.si-red { background: var(--red-dim); border: 1px solid rgba(239,68,68,.3); }
+.si-purple { background: var(--purple-dim); border: 1px solid rgba(139,92,246,.3); }
+.si-cyan { background: rgba(6,182,212,.12); border: 1px solid rgba(6,182,212,.3); }
+
+.access-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.access-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'DM Mono', monospace;
+}
+
+.ac-all { background: var(--green-dim); color: #6ee7b7; border: 1px solid rgba(16,185,129,.25); }
+.ac-plan { background: var(--blue-dim); color: #93c5fd; border: 1px solid var(--blue-border); }
+.ac-admin { background: var(--purple-dim); color: #c4b5fd; border: 1px solid rgba(139,92,246,.25); }
+.ac-perm { background: var(--amber-dim); color: #fcd34d; border: 1px solid rgba(245,158,11,.25); }
+
+.access-sep { color: var(--border2); font-size: 11px; }
+
+/* ── SUBSECTION ── */
+.subsection {
+  margin-top: 36px;
+  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+
+.subsection h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subsection h3::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 16px;
+  background: var(--blue);
+  border-radius: 2px;
+}
+
+.subsection p {
+  color: var(--text2);
+  margin-bottom: 12px;
+  font-size: 13.5px;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.callout-body { flex: 1; }
+.callout-body strong { display: block; margin-bottom: 2px; }
+
+.callout-urgent {
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,.25);
+  color: #fca5a5;
+}
+
+.callout-info {
+  background: var(--blue-dim);
+  border: 1px solid var(--blue-border);
+  color: #93c5fd;
+}
+
+.callout-tip {
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,158,11,.25);
+  color: #fcd34d;
+}
+
+.callout-success {
+  background: var(--green-dim);
+  border: 1px solid rgba(16,185,129,.25);
+  color: #6ee7b7;
+}
+
+/* ── TABLE ── */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.doc-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border2);
+  font-weight: 400;
+}
+
+.doc-table td {
+  padding: 11px 14px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.doc-table tr:last-child td { border-bottom: none; }
+.doc-table tr:hover td { background: rgba(255,255,255,.015); }
+
+.doc-table strong { color: var(--text); font-weight: 500; }
+
+/* ── STATUS ITEMS ── */
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.status-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surf);
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.sd-red { background: var(--red); box-shadow: 0 0 6px rgba(239,68,68,.5); }
+.sd-amber { background: var(--amber); box-shadow: 0 0 6px rgba(245,158,11,.4); }
+.sd-green { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,.4); }
+.sd-blue { background: var(--blue); box-shadow: 0 0 6px rgba(59,130,246,.4); }
+.sd-gray { background: var(--muted); }
+
+.status-label { font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.status-desc { color: var(--muted2); font-size: 12px; }
+
+/* ── STEP LIST ── */
+.step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 16px 0;
+  position: relative;
+}
+
+.step-list::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: var(--border2);
+}
+
+.step {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  position: relative;
+}
+
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--surf2);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 500;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.step-body { flex: 1; padding-top: 6px; }
+.step-body strong { color: var(--text); font-size: 13.5px; display: block; margin-bottom: 4px; }
+.step-body p { color: var(--muted2); font-size: 12.5px; }
+
+/* ── BULLET LIST ── */
+.doc-ul {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.doc-ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text2);
+  font-size: 13.5px;
+  padding-left: 2px;
+}
+
+.doc-ul li::before {
+  content: '→';
+  color: var(--blue);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── ROLE CARDS ── */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.role-card {
+  background: var(--surf2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.role-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.role-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+
+.ri-blue { background: var(--blue-dim); }
+.ri-amber { background: var(--amber-dim); }
+.ri-purple { background: var(--purple-dim); }
+
+.role-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.rn-blue { color: #93c5fd; }
+.rn-amber { color: #fcd34d; }
+.rn-purple { color: #c4b5fd; }
+
+.role-perm {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.perm-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  color: var(--muted2);
+}
+
+.perm-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.perm-yes { background: var(--green); }
+.perm-no { background: var(--border2); }
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.kpi-mini {
+  background: var(--surf2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kpi-emoji { font-size: 20px; }
+.kpi-info-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.kpi-info-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+.kpi-blue .kpi-info-val { color: var(--blue); }
+.kpi-green .kpi-info-val { color: var(--green); }
+.kpi-amber .kpi-info-val { color: var(--amber); }
+.kpi-red .kpi-info-val { color: var(--red); }
+
+/* ── FAQ ── */
+.faq-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+
+.faq-item {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.faq-q {
+  padding: 16px 20px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+  transition: background .15s;
+}
+
+.faq-q:hover { background: rgba(255,255,255,.02); }
+
+.faq-arrow {
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+
+.faq-item.open .faq-arrow { transform: rotate(90deg); color: var(--blue); }
+.faq-item.open .faq-q { color: var(--blue); border-bottom: 1px solid var(--border); }
+
+.faq-a {
+  padding: 0 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease, padding .25s ease;
+  color: var(--muted2);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.faq-item.open .faq-a { max-height: 300px; padding: 16px 20px; }
+
+/* ── INLINE CODE ── */
+code {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: var(--surf2);
+  border: 1px solid var(--border2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--blue);
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 48px 0;
+}
+
+/* ── SCROLLSPY ACTIVE ── */
+.nav-item.active, .nav-sub.active {
+  transition: all .2s;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { padding: 32px 24px 80px; }
+  .role-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="logo-mark">IA</div>
+  <span class="logo-text">IABOO</span>
+  <span class="logo-sep">·</span>
+  <span class="doc-badge">Documentation</span>
+  <div class="header-spacer"></div>
+  <span class="version-tag">Portail Admin v1.0 · Mars 2026</span>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <div class="nav-section-label">Introduction</div>
+    <a class="nav-item active" href="#overview" onclick="setActive(this)">
+      <span class="nav-icon">⊡</span> Vue d'ensemble
+    </a>
+    <a class="nav-item" href="#roles" onclick="setActive(this)">
+      <span class="nav-icon">👥</span> Connexion & rôles
+    </a>
+
+    <div class="nav-section-label">Pages</div>
+    <a class="nav-item" href="#dashboard" onclick="setActive(this)">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a class="nav-sub" href="#dashboard-urgence" onclick="setActive(this)">Bandeau d'urgence</a>
+    <a class="nav-sub" href="#dashboard-kpi" onclick="setActive(this)">KPI temps réel</a>
+    <a class="nav-sub" href="#dashboard-sites" onclick="setActive(this)">Couverture sites</a>
+    <a class="nav-sub" href="#dashboard-alertes" onclick="setActive(this)">Alertes actives</a>
+    <a class="nav-sub" href="#dashboard-missions" onclick="setActive(this)">Missions en cours</a>
+
+    <a class="nav-item" href="#agents" onclick="setActive(this)">
+      <span class="nav-icon">👤</span> Agents
+    </a>
+    <a class="nav-sub" href="#agents-recherche" onclick="setActive(this)">Recherche & filtres</a>
+    <a class="nav-sub" href="#agents-fiche" onclick="setActive(this)">Fiche agent</a>
+    <a class="nav-sub" href="#agents-crud" onclick="setActive(this)">Ajouter / Modifier</a>
+
+    <a class="nav-item" href="#sites" onclick="setActive(this)">
+      <span class="nav-icon">🏢</span> Sites & Clients
+    </a>
+    <a class="nav-sub" href="#sites-navigation" onclick="setActive(this)">Navigation</a>
+    <a class="nav-sub" href="#sites-detail" onclick="setActive(this)">Détail d'un site</a>
+    <a class="nav-sub" href="#sites-contrat" onclick="setActive(this)">Modifier un contrat</a>
+
+    <a class="nav-item" href="#plannings" onclick="setActive(this)">
+      <span class="nav-icon">📅</span> Plannings
+    </a>
+    <a class="nav-sub" href="#plannings-vues" onclick="setActive(this)">Les 3 vues</a>
+    <a class="nav-sub" href="#plannings-export" onclick="setActive(this)">Export & envoi</a>
+    <a class="nav-sub" href="#plannings-replanif" onclick="setActive(this)">Replanifier</a>
+
+    <a class="nav-item" href="#anomalies" onclick="setActive(this)">
+      <span class="nav-icon">⚠️</span> Anomalies
+    </a>
+    <a class="nav-sub" href="#anomalies-types" onclick="setActive(this)">Types d'anomalies</a>
+    <a class="nav-sub" href="#anomalies-resolution" onclick="setActive(this)">Résolution manuelle</a>
+
+    <a class="nav-item" href="#disponibilites" onclick="setActive(this)">
+      <span class="nav-icon">🗓️</span> Disponibilités
+    </a>
+    <a class="nav-sub" href="#dispo-collecte" onclick="setActive(this)">Collecte automatique</a>
+    <a class="nav-sub" href="#dispo-saisie" onclick="setActive(this)">Saisie manuelle</a>
+    <a class="nav-sub" href="#dispo-planification" onclick="setActive(this)">Lancer la planification</a>
+
+    <a class="nav-item" href="#parametres" onclick="setActive(this)">
+      <span class="nav-icon">⚙️</span> Paramètres
+    </a>
+
+    <div class="nav-section-label">Référence</div>
+    <a class="nav-item" href="#notifs" onclick="setActive(this)">
+      <span class="nav-icon">🔔</span> Notifications
+    </a>
+    <a class="nav-item" href="#faq" onclick="setActive(this)">
+      <span class="nav-icon">💬</span> FAQ
+    </a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">Guide utilisateur</div>
+      <h1>Documentation<br><span>Fonctionnelle IABOO</span></h1>
+      <p class="hero-desc">Ce guide explique page par page comment utiliser le portail admin IABOO — le système de planification automatisée des agents de sécurité privée.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><div class="hero-meta-dot"></div> Portail Admin v1.0</div>
+        <div class="hero-meta-item" style="--dot-color:var(--blue)"><div class="hero-meta-dot" style="background:var(--blue)"></div> 7 écrans documentés</div>
+        <div class="hero-meta-item" style="--dot-color:var(--purple)"><div class="hero-meta-dot" style="background:var(--purple)"></div> 3 rôles utilisateurs</div>
+      </div>
+    </div>
+
+    <!-- 1. VUE D'ENSEMBLE -->
+    <section class="section" id="overview">
+      <div class="section-eyebrow">01 — Introduction</div>
+      <h2><div class="section-icon si-blue">⊡</div> Vue d'ensemble</h2>
+
+      <p style="color:var(--text2);margin-bottom:20px;font-size:14px;">IABOO est un portail de gestion de la planification des agents de sécurité privée, piloté par une intelligence artificielle qui automatise les tâches répétitives.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;">
+        <div style="background:var(--surf2);border:1px solid var(--border2);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--green);margin-bottom:12px;">🤖 Ce que fait l'IA</div>
+          <ul class="doc-ul">
+            <li>Envoyer la collecte des disponibilités mensuelles (WhatsApp)</li>
+            <li>Générer le planning mensuel (contraintes légales + contrat)</li>
+            <li>Chercher un remplaçant dès qu'une absence est signalée</li>
+            <li>Traiter les demandes clients envoyées par email</li>
+            <li>Créer des anomalies et alerter si aucune solution n'est trouvée</li>
+          </ul>
+        </div>
+        <div style="background:var(--surf2);border:1px solid var(--border2);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;">👤 Ce que vous faites</div>
+          <ul class="doc-ul">
+            <li>Superviser et valider les décisions de l'IA</li>
+            <li>Intervenir manuellement en cas d'anomalie non résolue</li>
+            <li>Gérer le référentiel (agents, sites, clients)</li>
+            <li>Configurer les paramètres du système</li>
+            <li>Relancer les agents n'ayant pas répondu</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. RÔLES -->
+    <section class="section" id="roles">
+      <div class="section-eyebrow">02 — Accès</div>
+      <h2><div class="section-icon si-purple">👥</div> Connexion & rôles</h2>
+
+      <p style="color:var(--text2);margin-bottom:20px;">Connectez-vous avec votre adresse email professionnelle sur l'URL fournie par votre administrateur. Votre rôle détermine les écrans et actions auxquels vous avez accès.</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <div class="role-card-header">
+            <div class="role-icon ri-blue">📋</div>
+            <div class="role-name rn-blue">Planificateur</div>
+          </div>
+          <div class="role-perm">
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Tous les écrans</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Modifier plannings</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Gérer anomalies</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Gérer agents & sites</div>
+            <div class="perm-row"><div class="perm-dot perm-no"></div><span style="color:var(--muted)">Paramètres système</span></div>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-header">
+            <div class="role-icon ri-amber">🔒</div>
+            <div class="role-name rn-amber">Permanence</div>
+          </div>
+          <div class="role-perm">
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Dashboard</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Déclarer absences</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Voir anomalies</div>
+            <div class="perm-row"><div class="perm-dot perm-no"></div><span style="color:var(--muted)">Modifier plannings</span></div>
+            <div class="perm-row"><div class="perm-dot perm-no"></div><span style="color:var(--muted)">Agents & sites</span></div>
+          </div>
+        </div>
+        <div class="role-card" style="border-color:rgba(139,92,246,.25)">
+          <div class="role-card-header">
+            <div class="role-icon ri-purple">👑</div>
+            <div class="role-name rn-purple">Admin</div>
+          </div>
+          <div class="role-perm">
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Accès complet</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Paramètres système</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Gestion utilisateurs</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Intégrations API</div>
+            <div class="perm-row"><div class="perm-dot perm-yes"></div>Journal d'activité</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">Si vous ne voyez pas une section du menu, c'est que votre rôle ne vous y donne pas accès. Contactez votre administrateur pour modifier vos droits.</div>
+      </div>
+    </section>
+
+    <!-- 3. DASHBOARD -->
+    <section class="section" id="dashboard">
+      <div class="section-eyebrow">03 — Page</div>
+      <h2><div class="section-icon si-blue">📊</div> Dashboard</h2>
+
+      <div class="access-bar">
+        <span class="access-chip ac-all">Tous les rôles</span>
+        <span class="access-sep">·</span>
+        <span style="font-size:12px;color:var(--muted)">Page d'accueil · vue opérationnelle temps réel</span>
+      </div>
+
+      <div class="subsection" id="dashboard-urgence">
+        <h3>Bandeau d'urgence</h3>
+        <p>Si une absence critique n'est pas couverte, un <strong style="color:var(--red)">bandeau rouge</strong> apparaît en haut de page. C'est la première chose à vérifier en arrivant.</p>
+        <div class="callout callout-urgent">
+          <span class="callout-icon">🚨</span>
+          <div class="callout-body"><strong>Priorité absolue</strong>Ce bandeau signale qu'un poste est découvert en ce moment même. Le minuteur indique depuis combien de temps. Agissez immédiatement via le bouton "Intervenir".</div>
+        </div>
+        <p>Le bandeau affiche : le site et le poste concerné, le nombre d'agents contactés et de refus, un minuteur en temps réel. Deux actions sont disponibles : <code>Voir détail</code> → anomalie correspondante · <code>Intervenir</code> → résolution manuelle directe.</p>
+      </div>
+
+      <div class="subsection" id="dashboard-kpi">
+        <h3>Les 4 indicateurs clés</h3>
+        <p>Mis à jour toutes les 30 secondes. Chaque carte est cliquable et redirige vers l'écran correspondant.</p>
+        <div class="kpi-grid">
+          <div class="kpi-mini kpi-blue">
+            <span class="kpi-emoji">👥</span>
+            <div><div class="kpi-info-label">Agents disponibles</div><div class="kpi-info-val">34</div></div>
+          </div>
+          <div class="kpi-mini kpi-green">
+            <span class="kpi-emoji">🏢</span>
+            <div><div class="kpi-info-label">Couverture sites</div><div class="kpi-info-val">87%</div></div>
+          </div>
+          <div class="kpi-mini kpi-amber">
+            <span class="kpi-emoji">⚠️</span>
+            <div><div class="kpi-info-label">Anomalies ouvertes</div><div class="kpi-info-val">3</div></div>
+          </div>
+          <div class="kpi-mini kpi-red">
+            <span class="kpi-emoji">🪪</span>
+            <div><div class="kpi-info-label">Cartes pro expirantes</div><div class="kpi-info-val">2</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection" id="dashboard-sites">
+        <h3>Couverture des sites</h3>
+        <p>Liste de tous les sites actifs aujourd'hui, triés du plus critique au mieux couvert.</p>
+        <div class="status-list">
+          <div class="status-item"><div class="status-dot sd-red"></div><div><div class="status-label">Critique — &lt; 70%</div><div class="status-desc">Action requise immédiatement. Un ou plusieurs postes sont non pourvus.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-amber"></div><div><div class="status-label">Partiel — 70 à 99%</div><div class="status-desc">Site sous-couvert. Surveiller l'évolution.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-green"></div><div><div class="status-label">OK — 100%</div><div class="status-desc">Tous les postes sont couverts.</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection" id="dashboard-alertes">
+        <h3>Alertes actives</h3>
+        <p>Vue consolidée de tout ce qui nécessite votre attention, classée par sévérité.</p>
+        <div class="status-list">
+          <div class="status-item"><div class="status-dot sd-red"></div><div><div class="status-label">Urgente</div><div class="status-desc">Absence non couverte. À traiter immédiatement.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-amber"></div><div><div class="status-label">Attention</div><div class="status-desc">Carte pro proche expiration · Agent proche plafond heures · Site partiellement couvert.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-blue"></div><div><div class="status-label">Info</div><div class="status-desc">Demande client reçue · Disponibilités en attente de réponse.</div></div></div>
+        </div>
+      </div>
+
+      <div class="subsection" id="dashboard-missions">
+        <h3>Missions en cours & agents volants</h3>
+        <p>Le panneau bas gauche liste les missions du jour par ordre horaire. Le panneau bas droit liste les agents volants disponibles avec leur jauge d'heures consommées.</p>
+        <div class="status-list">
+          <div class="status-item"><div class="status-dot sd-green"></div><div><div class="status-label">En poste</div><div class="status-desc">L'agent est sur site.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-red"></div><div><div class="status-label">Absent</div><div class="status-desc">L'agent a signalé son absence. Recherche de remplaçant active.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-amber"></div><div><div class="status-label">IA en recherche</div><div class="status-desc">Un poste est découvert. L'IA contacte les agents disponibles.</div></div></div>
+          <div class="status-item"><div class="status-dot sd-amber"></div><div><div class="status-label">Retard signalé</div><div class="status-desc">L'agent a indiqué un retard.</div></div></div>
+        </div>
+        <div class="callout callout-tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">Si le bandeau d'urgence est actif, un bouton <strong>"Assigner"</strong> apparaît à côté de chaque agent volant "Libre" pour l'affecter manuellement en un clic.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. AGENTS -->
+    <section class="section" id="agents">
+      <div class="section-eyebrow">04 — Page</div>
+      <h2><div class="section-icon si-cyan">👤</div> Agents</h2>
+      <div class="access-bar">
+        <span class="access-chip ac-plan">Planificateur</span>
+        <span class="access-chip ac-admin">Admin</span>
+      </div>
+
+      <div class="subsection" id="agents-recherche">
+        <h3>Recherche & filtres</h3>
+        <p><strong style="color:var(--text)">Barre de recherche</strong> : tapez un nom, prénom ou numéro de téléphone. La liste se filtre instantanément (pas besoin d'appuyer sur Entrée).</p>
+        <p><strong style="color:var(--text)">Filtres rapides</strong> : cliquez sur les chips pour filtrer par type (Rattaché / Volant), par statut de carte pro (Valide / Expire bientôt / Expirée) ou par site.</p>
+      </div>
+
+      <div class="subsection" id="agents-fiche">
+        <h3>Fiche détail d'un agent</h3>
+        <p>Cliquez sur une ligne du tableau pour ouvrir le panneau de détail à droite. Il contient :</p>
+        <ul class="doc-ul">
+          <li>Coordonnées (téléphone, email, numéro WhatsApp)</li>
+          <li>Type de contrat et heures mensuelles (effectuées / total contrat)</li>
+          <li>Numéro et date d'expiration de la carte professionnelle</li>
+          <li>Compétences : SSIAP1, SSIAP2, SSIAP3...</li>
+          <li>Jours fixes, préférences, conflits avec d'autres agents</li>
+        </ul>
+        <p>En bas du panneau : <code>Voir planning</code> → planning de cet agent · <code>Modifier</code> → formulaire d'édition.</p>
+      </div>
+
+      <div class="subsection" id="agents-crud">
+        <h3>Ajouter, modifier, désactiver</h3>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body"><strong>Ajouter un agent</strong><p>Cliquez sur <code>+ Ajouter un agent</code> en haut à droite. Remplissez le formulaire (identité, type, site, heures contrat, carte pro, compétences). L'agent sera inclus dans la prochaine collecte de disponibilités.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body"><strong>Modifier un agent</strong><p>Depuis sa fiche détail, cliquez sur <code>Modifier</code>. Le formulaire est pré-rempli. Un message d'avertissement apparaît si la modification impacte des missions planifiées.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body"><strong>Renouveler une carte pro</strong><p>Depuis la fiche d'un agent avec une alerte carte, cliquez sur <code>Mettre à jour la carte</code>. Saisissez le nouveau numéro et la nouvelle date d'expiration. L'alerte disparaît immédiatement.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body"><strong>Désactiver un agent</strong><p>Cliquez sur l'icône × dans la liste. Une confirmation est demandée. L'agent n'apparaît plus dans les plannings futurs mais son historique est conservé.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SITES & CLIENTS -->
+    <section class="section" id="sites">
+      <div class="section-eyebrow">05 — Page</div>
+      <h2><div class="section-icon si-green">🏢</div> Sites & Clients</h2>
+      <div class="access-bar">
+        <span class="access-chip ac-plan">Planificateur</span>
+        <span class="access-chip ac-admin">Admin</span>
+      </div>
+
+      <div class="subsection" id="sites-navigation">
+        <h3>Navigation en 3 colonnes</h3>
+        <p>L'écran est organisé en 3 colonnes : <strong style="color:var(--text)">Clients</strong> → <strong style="color:var(--text)">Sites du client</strong> → <strong style="color:var(--text)">Détail du site</strong>.</p>
+        <p>Cliquez sur un client pour voir ses sites. Cliquez sur un site pour voir son détail. Filtrez les sites par couverture : Tous · OK · Partiel · Critique.</p>
+      </div>
+
+      <div class="subsection" id="sites-detail">
+        <h3>Détail d'un site</h3>
+        <p>Le panneau droit affiche 6 sections :</p>
+        <table class="doc-table">
+          <thead><tr><th>Section</th><th>Contenu</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Couverture</strong></td><td>Postes requis vs couverts aujourd'hui. Indicateur visuel de taux.</td></tr>
+            <tr><td><strong>Agents affectés</strong></td><td>Liste des agents rattachés au site avec leurs heures planifiées ce mois.</td></tr>
+            <tr><td><strong>Horaires</strong></td><td>Créneaux de surveillance configurés (semaine, week-end).</td></tr>
+            <tr><td><strong>Compétences</strong></td><td>Niveau SSIAP minimum requis pour intervenir sur ce site.</td></tr>
+            <tr><td><strong>Contrat</strong></td><td>Dates de début et fin du contrat avec le client.</td></tr>
+            <tr><td><strong>Anomalies récentes</strong></td><td>Les 3 dernières anomalies survenues sur ce site.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection" id="sites-contrat">
+        <h3>Modifier un contrat de site</h3>
+        <div class="callout callout-tip">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-body"><strong>Impact planning</strong>Avant de sauvegarder, l'application analyse les missions déjà planifiées affectées et vous les présente. Vérifiez l'impact avant de confirmer — la replanification est automatique.</div>
+        </div>
+        <p>Depuis le détail d'un site, cliquez sur <code>Modifier le contrat</code>. L'IA recalcule l'impact et liste les missions concernées. Confirmez pour appliquer et replanifier.</p>
+      </div>
+    </section>
+
+    <!-- 6. PLANNINGS -->
+    <section class="section" id="plannings">
+      <div class="section-eyebrow">06 — Page</div>
+      <h2><div class="section-icon si-blue">📅</div> Plannings</h2>
+      <div class="access-bar">
+        <span class="access-chip ac-plan">Planificateur</span>
+        <span class="access-chip ac-admin">Admin</span>
+      </div>
+
+      <div class="subsection" id="plannings-vues">
+        <h3>Les 3 vues disponibles</h3>
+        <table class="doc-table">
+          <thead><tr><th>Vue</th><th>Affichage</th><th>Idéale pour</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Vue globale</strong></td><td>Grille agents × jours. Chaque cellule = une mission.</td><td>Vision d'ensemble du mois, identifier les trous.</td></tr>
+            <tr><td><strong>Vue par agent</strong></td><td>Mini-calendrier + missions détaillées + stats (heures, jours).</td><td>Vérifier la charge d'un agent spécifique.</td></tr>
+            <tr><td><strong>Vue par site</strong></td><td>À venir dans une version future.</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p>Naviguez entre les mois avec les chevrons <code>‹ ›</code>. Vous pouvez consulter jusqu'à 3 mois à l'avance.</p>
+        <p>Cliquez sur une cellule de la grille pour ouvrir le <strong style="color:var(--text)">détail de la mission</strong> : agent, site, horaires, type (Standard / Remplacement / Urgence client), statut.</p>
+      </div>
+
+      <div class="subsection" id="plannings-export">
+        <h3>Exporter & envoyer</h3>
+        <ul class="doc-ul">
+          <li><strong style="color:var(--text)">⬇ Export Excel</strong> — tableau mensuel pour le suivi interne</li>
+          <li><strong style="color:var(--text)">📄 PDF Global</strong> — document mensuel au format envoi agents (style iComet)</li>
+          <li><strong style="color:var(--text)">Renvoyer le mail</strong> — depuis la vue par agent, envoie le PDF du mois à un agent spécifique</li>
+        </ul>
+      </div>
+
+      <div class="subsection" id="plannings-replanif">
+        <h3>Replanifier avec l'IA</h3>
+        <p>Le bouton <code>🔄 Replanifier</code> (vert, en haut à droite) déclenche une nouvelle génération du planning mensuel. Utilisez-le après avoir modifié des disponibilités ou des contrats de site.</p>
+        <div class="callout callout-info">
+          <span class="callout-icon">🤖</span>
+          <div class="callout-body"><strong>Ce que l'IA respecte</strong>Disponibilités déclarées · Heures de contrat · Repos 11h minimum · 6 jours max consécutifs · 35h/semaine · Jours fixes des agents · Compétences requises par site · Conflits interpersonnels.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. ANOMALIES -->
+    <section class="section" id="anomalies">
+      <div class="section-eyebrow">07 — Page</div>
+      <h2><div class="section-icon si-red">⚠️</div> Anomalies</h2>
+      <div class="access-bar">
+        <span class="access-chip ac-all">Tous les rôles</span>
+      </div>
+
+      <p style="color:var(--text2);margin-bottom:20px;">L'écran Anomalies centralise tous les événements nécessitant une intervention humaine. Le badge rouge dans le menu indique le nombre d'anomalies ouvertes.</p>
+
+      <div class="subsection" id="anomalies-types">
+        <h3>Types d'anomalies</h3>
+        <table class="doc-table">
+          <thead><tr><th>Type</th><th>Déclencheur</th><th>Urgence</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Remplacement impossible</strong></td><td>Aucun agent n'a accepté après le délai configuré</td><td><span style="color:var(--red)">🔴 Urgente</span></td></tr>
+            <tr><td><strong>Carte pro expirée</strong></td><td>Date d'expiration dépassée sans renouvellement</td><td><span style="color:var(--amber)">🟡 Attention</span></td></tr>
+            <tr><td><strong>Dépassement heures</strong></td><td>Agent planifié au-delà de son contrat mensuel</td><td><span style="color:var(--amber)">🟡 Attention</span></td></tr>
+            <tr><td><strong>Conflit planning</strong></td><td>Deux missions incompatibles pour le même agent</td><td><span style="color:var(--amber)">🟡 Attention</span></td></tr>
+          </tbody>
+        </table>
+
+        <p>Le panneau de détail affiche 4 sections : <strong style="color:var(--text)">Résumé</strong> · <strong style="color:var(--text)">Chronologie</strong> des événements · <strong style="color:var(--text)">Agents contactés</strong> (avec statuts Accepté/Refusé/Pas de réponse) · <strong style="color:var(--text)">Propositions de l'IA</strong>.</p>
+      </div>
+
+      <div class="subsection" id="anomalies-resolution">
+        <h3>Résolution manuelle</h3>
+        <div class="step-list">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body"><strong>Ouvrir l'anomalie</strong><p>Cliquez sur l'anomalie dans la liste. Consultez la chronologie et les agents déjà contactés.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body"><strong>Consulter les propositions IA</strong><p>Si l'IA a identifié des solutions, elles apparaissent avec un bouton "Appliquer" pour chacune.</p></div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body"><strong>Résoudre manuellement</strong><p>Cliquez sur <code>Résoudre manuellement</code>, sélectionnez un agent disponible, confirmez. Le planning est mis à jour et l'agent reçoit une notification WhatsApp.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. DISPONIBILITÉS -->
+    <section class="section" id="disponibilites">
+      <div class="section-eyebrow">08 — Page</div>
+      <h2><div class="section-icon si-green">🗓️</div> Disponibilités</h2>
+      <div class="access-bar">
+        <span class="access-chip ac-plan">Planificateur</span>
+        <span class="access-chip ac-admin">Admin</span>
+      </div>
+
+      <div class="subsection" id="dispo-collecte">
+        <h3>Collecte automatique mensuelle</h3>
+        <p>Chaque mois, à la date configurée dans les Paramètres (défaut : le 20), l'IA envoie automatiquement un message WhatsApp à tous les agents pour recueillir leurs indisponibilités.</p>
+        <div class="callout callout-success">
+          <span class="callout-icon">💬</span>
+          <div class="callout-body"><strong>Exemple de réponse agent</strong>"Bonjour, pour juillet je serai pas dispo les 5, 6 et 12. Le reste ça va. Merci" — L'IA parse automatiquement ce message et enregistre les jours 5, 6 et 12 comme indisponibles.</div>
+        </div>
+        <p>Le <strong style="color:var(--text)">bandeau de progression</strong> en haut de l'écran indique le nombre d'agents ayant répondu, la date de la dernière relance, et une barre de progression.</p>
+        <p>La <strong style="color:var(--text)">grille centrale</strong> (agents × jours) donne une vue synthétique : vert = disponible · rouge "OFF" = indisponible · pointillé = pas encore répondu.</p>
+      </div>
+
+      <div class="subsection" id="dispo-saisie">
+        <h3>Saisie & correction manuelle</h3>
+        <ul class="doc-ul">
+          <li><strong style="color:var(--text)">Corriger</strong> — cliquez sur <code>✏ Modifier</code> dans le panneau d'un agent. Le calendrier devient interactif : cliquez sur un jour pour basculer disponible ↔ indisponible.</li>
+          <li><strong style="color:var(--text)">Saisir</strong> — cliquez sur <code>✏ Saisir manuellement</code> dans le header pour ouvrir le formulaire (sélection agent + calendrier interactif).</li>
+          <li><strong style="color:var(--text)">Relancer individuellement</strong> — depuis le panneau d'un agent en attente, bouton <code>📨 Relancer cet agent</code>.</li>
+          <li><strong style="color:var(--text)">Relancer en masse</strong> — bouton <code>📨 Relancer tous</code> en haut de page. Une confirmation liste les agents concernés.</li>
+        </ul>
+        <div class="callout callout-info">
+          <span class="callout-icon">ℹ️</span>
+          <div class="callout-body">Un délai minimum de 24h est respecté entre deux relances au même agent pour éviter le spam.</div>
+        </div>
+      </div>
+
+      <div class="subsection" id="dispo-planification">
+        <h3>Lancer la planification</h3>
+        <p>Une fois le seuil minimum de réponses atteint (défaut : 80%, configurable dans Paramètres), le bouton <code>🚀 Lancer planification</code> s'active.</p>
+        <p>Une fenêtre de confirmation résume la situation. Vous êtes ensuite redirigé vers l'écran Plannings pour vérifier le résultat.</p>
+      </div>
+    </section>
+
+    <!-- 9. PARAMÈTRES -->
+    <section class="section" id="parametres">
+      <div class="section-eyebrow">09 — Page</div>
+      <h2><div class="section-icon si-purple">⚙️</div> Paramètres</h2>
+      <div class="access-bar">
+        <span class="access-chip ac-admin">Admin (tout)</span>
+        <span class="access-chip ac-plan">Planificateur (partiel)</span>
+      </div>
+
+      <p style="color:var(--text2);margin-bottom:20px;">Toutes les modifications sont sauvegardées en une seule fois via le bouton <code>💾 Sauvegarder</code> en haut à droite.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Section</th><th>Accès</th><th>Ce qu'on y configure</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Intégrations</strong></td><td><span style="color:#c4b5fd">Admin</span></td><td>360dialog WhatsApp · Claude API · SendGrid · n8n. Statut en temps réel de chaque service.</td></tr>
+          <tr><td><strong>Comportement IA</strong></td><td><span style="color:#93c5fd">Plan + Admin</span></td><td>Délai escalade (30 min) · Timeout réponse (15 min) · Jour collecte dispo (le 20) · Seuil alerte heures (90%) · Toggles d'autonomie.</td></tr>
+          <tr><td><strong>Notifications</strong></td><td><span style="color:#93c5fd">Plan + Admin</span></td><td>Email d'alerte · Alertes temps réel portail · Rapport quotidien (heure) · Notification client.</td></tr>
+          <tr><td><strong>Utilisateurs & rôles</strong></td><td><span style="color:#c4b5fd">Admin</span></td><td>Ajouter / modifier rôle / désactiver des utilisateurs. Matrice des permissions.</td></tr>
+          <tr><td><strong>Numéros WhatsApp</strong></td><td><span style="color:#93c5fd">Plan + Admin</span></td><td>Vérifier la joignabilité WhatsApp de tous les agents. Bouton "Vérifier" par agent.</td></tr>
+          <tr><td><strong>Journal d'activité</strong></td><td><span style="color:#c4b5fd">Admin</span></td><td>Historique 30 jours des actions IA et manuelles. Export CSV.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body"><strong>Toggle "Validation automatique des remplacements"</strong>Si activé, l'IA met à jour le planning et envoie le mail <em>sans</em> attendre votre validation. À activer avec précaution seulement si vous faites confiance au moteur de remplacement.</div>
+      </div>
+    </section>
+
+    <!-- 10. NOTIFICATIONS -->
+    <section class="section" id="notifs">
+      <div class="section-eyebrow">10 — Référence</div>
+      <h2><div class="section-icon si-amber">🔔</div> Notifications & alertes</h2>
+
+      <table class="doc-table">
+        <thead><tr><th>Canal</th><th>Destinataire</th><th>Déclencheur</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Portail — cloche 🔔</strong></td><td>Planificateur · Admin</td><td>Toute nouvelle anomalie ou alerte</td></tr>
+          <tr><td><strong>Email — alerte immédiate</strong></td><td>Email configuré en Paramètres</td><td>Anomalie urgente créée (remplacement impossible)</td></tr>
+          <tr><td><strong>Email — rapport quotidien</strong></td><td>Email configuré en Paramètres</td><td>Chaque matin à l'heure configurée (couverture, anomalies, heures)</td></tr>
+          <tr><td><strong>WhatsApp — collecte dispo</strong></td><td>Agents</td><td>Le jour configuré chaque mois (défaut : le 20)</td></tr>
+          <tr><td><strong>WhatsApp — proposition remplacement</strong></td><td>Agents contactés</td><td>Dès qu'une absence est détectée et qu'un candidat est identifié</td></tr>
+          <tr><td><strong>WhatsApp — confirmation mission</strong></td><td>Agent remplaçant</td><td>Après acceptation et validation</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 11. FAQ -->
+    <section class="section" id="faq">
+      <div class="section-eyebrow">11 — Référence</div>
+      <h2><div class="section-icon si-blue">💬</div> Questions fréquentes</h2>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Un agent n'a pas répondu à la collecte. Que faire ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">Allez dans l'écran <strong>Disponibilités</strong>, localisez l'agent (badge ⏳ En attente), et utilisez <code>📨 Relancer cet agent</code> pour lui envoyer un rappel WhatsApp. Si toujours pas de réponse après 24h, saisissez ses disponibilités manuellement après l'avoir contacté par téléphone.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            L'IA n'a pas trouvé de remplaçant. Que faire ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">Une anomalie <strong>"Remplacement impossible"</strong> est créée automatiquement et apparaît dans l'écran <strong>Anomalies</strong>. Ouvrez-la, consultez les propositions de l'IA, et utilisez <code>Résoudre manuellement</code> pour affecter un agent de votre choix.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Le planning généré ne me convient pas. Peut-on le corriger ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">Oui. Modifiez les disponibilités d'un agent manuellement dans l'écran <strong>Disponibilités</strong>, puis cliquez sur <code>🔄 Replanifier</code> dans l'écran <strong>Plannings</strong> pour régénérer le planning avec les nouvelles données.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Comment ajouter un nouveau site pour un client existant ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">Dans l'écran <strong>Sites & Clients</strong>, sélectionnez le client dans la colonne gauche, puis cliquez sur <code>+ Nouveau site</code>. Renseignez toutes les informations du site (adresse, postes requis, horaires, compétences, dates de contrat) et sauvegardez.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Un client envoie des demandes par email. Comment est-ce traité ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">L'IA surveille l'adresse configurée dans <strong>Paramètres → Intégrations</strong> (champ "Email de collecte clients"). Dès réception, l'IA parse la demande (dates, nombre d'agents, compétences) et lance automatiquement la recherche de disponibilités — même processus qu'un remplacement d'urgence.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Comment vérifier qu'un message WhatsApp a bien été traité ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">Consultez le <strong>Journal d'activité</strong> dans <strong>Paramètres → Journal</strong>. Chaque message reçu et parsé apparaît avec son horodatage, le résultat du traitement et l'auteur (IA Auto ou initiales du planificateur).</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Comment vérifier que tous les agents ont reçu leur planning ?
+            <span class="faq-arrow">›</span>
+          </div>
+          <div class="faq-a">Dans l'écran <strong>Plannings</strong>, les plannings avec statut "Envoyé" ont bien été transmis par email. Vous pouvez aussi renvoyer le mail manuellement à un agent spécifique depuis la <strong>vue par agent</strong> via le bouton <code>Renvoyer le mail</code>.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+    <p style="color:var(--muted);font-size:12px;font-family:'DM Mono',monospace;text-align:center;">IABOO Documentation Fonctionnelle v1.0 · Portail Admin · Mars 2026</p>
+
+  </main>
+</div>
+
+<script>
+function setActive(el) {
+  document.querySelectorAll('.nav-item, .nav-sub').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// Scrollspy
+const sections = document.querySelectorAll('section[id], div[id]');
+const navLinks = document.querySelectorAll('.nav-item[href], .nav-sub[href]');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + id) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
